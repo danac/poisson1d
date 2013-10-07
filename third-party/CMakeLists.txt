@@ -1,0 +1,7 @@
+if(NOT MUPARSER_FOUND)
+    message(STATUS "MuParser will be compiled")
+    add_subdirectory(muparser)
+    set(MUPARSER_SRC_PATH ${CMAKE_SOURCE_DIR}/third-party/muparser)
+    set(MUPARSER_INCLUDE_DIRS ${MUPARSER_SRC_PATH}/include PARENT_SCOPE)
+    set(MUPARSER_LIBRARIES muparser PARENT_SCOPE)
+endif(NOT MUPARSER_FOUND)

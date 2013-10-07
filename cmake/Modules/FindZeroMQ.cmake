@@ -85,6 +85,6 @@ if (ZEROMQ_FOUND)
 	ZeroMQ_LIBRARIES ZeroMQ_INCLUDE_DIR)
   message (STATUS "Found ZeroMQ version: ${ZeroMQ_VERSION}")
 else (ZEROMQ_FOUND)
-  message (FATAL_ERROR "Could not find the ZeroMQ libraries! Please install the development-libraries and headers (e.g., 'zeromq-devel' for Fedora/RedHat).")
+  message (FATAL_ERROR "Could not find the ZeroMQ libraries!")
 endif (ZEROMQ_FOUND)
 
