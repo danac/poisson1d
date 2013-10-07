@@ -17,10 +17,10 @@ if (MUPARSER_LIBRARIES AND MUPARSER_INCLUDE_DIRS)
   # in cache already
   set(MUPARSER_FOUND TRUE)
 else (MUPARSER_LIBRARIES AND MUPARSER_INCLUDE_DIRS)
-  find_path(MUPARSER_INCLUDE_DIR NAMES muParser/muParser.h
+  find_path(MUPARSER_INCLUDE_DIR NAMES muParser.h
        PATHS "${BASE_DIR}/include" NO_DEFAULT_PATH 
   )
-  find_path(MUPARSER_INCLUDE_DIR NAMES muParser/muParser.h
+  find_path(MUPARSER_INCLUDE_DIR NAMES muParser.h
   )
 
   find_library(MUPARSER_LIBRARY NAMES muparser PATHS "${BASE_DIR_LIB}"
