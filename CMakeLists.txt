@@ -9,7 +9,8 @@ find_package(Boost COMPONENTS python REQUIRED)
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(Eigen3 REQUIRED)
-
+find_package(Matplotlib)
+find_package(PyQt4)
 enable_testing()
 
 add_subdirectory(third-party)
