@@ -33,13 +33,13 @@ int main(int argc, char* argv[])
 
     Real a(-1.0);
     Real b(1.0);
-    UInt n(100);
+    size_t n(100);
     string rhs_func("-x*x+1");
 
     DistributedAssembler assembler(a, b, n, rhs_func);
 
     Real* rhs_ptr = new Real[n];
-    Real* matrix_ptr = new Real[3*n];
+    Real* matrix_ptr = new Real[3*n-2];
 
     assembler.assemble_rhs(rhs_ptr);
     assembler.assemble_matrix(matrix_ptr);
@@ -59,31 +59,38 @@ int main(int argc, char* argv[])
     Real expected_coef1 = -1/dx;
     Real expected_coef2 = 2/dx;
 
-    assert(matrix_ptr[0] == expected_coef1);
-    cout << " matrix[0,0] = " << matrix_ptr[0] << " expected " << expected_coef1 << endl;
+    size_t count(0);
 
-    assert(matrix_ptr[1] == expected_coef2);
-    cout << " matrix[0,1] = " << matrix_ptr[1] << " expected " << expected_coef2 << endl;
+    cout << " Row " << count << ": ";
+    assert(matrix_ptr[0] == expected_coef2);
+    cout << matrix_ptr[0] << " ";
 
-    for (size_t i(2); i < 3*n-2; i+=3)
+    assert(matrix_ptr[1] == expected_coef1);
+    cout << matrix_ptr[1] << endl;
+
+    ++count;
+
+    for (size_t i(2); i < 3*n-4; i+=3)
     {
-
+        cout << " Row " << count << ": ";
         assert(matrix_ptr[i] == expected_coef1);
-        cout << " matrix[" << i << "," << i-1 << "] = " << matrix_ptr[i] << " expected " << expected_coef1 << endl;
+        cout << matrix_ptr[i] << " ";
 
         assert(matrix_ptr[i+1] == expected_coef2);
-        cout << " matrix[" << i << "," << i << "] = " << matrix_ptr[i+1] << " expected " << expected_coef2 << endl;
+        cout << matrix_ptr[i+1] << " ";
 
         assert(matrix_ptr[i+2] == expected_coef1);
-        cout << " matrix[" << i << "," << i+1 << "] = " << matrix_ptr[i+2] << " expected " << expected_coef1 << endl;
+        cout << matrix_ptr[i+2] << endl;
 
+        ++count;
     }
 
-    assert(matrix_ptr[3*n-2] == expected_coef1);
-    cout << " matrix[" << 3*n-1 << "," << 3*n-2 << "] = " << matrix_ptr[3*n-2] << " expected " << expected_coef1 << endl;
+    cout << " Row " << count << ": ";
+    assert(matrix_ptr[3*n-4] == expected_coef1);
+    cout << matrix_ptr[3*n-4] << " ";
 
-    assert(matrix_ptr[3*n-1] == expected_coef2);
-    cout << " matrix[" << 3*n-1 << "," << 3*n-1 << "] = " << matrix_ptr[3*n-1] << " expected " << expected_coef2 << endl;
+    assert(matrix_ptr[3*n-3] == expected_coef2);
+    cout << matrix_ptr[3*n-3] << endl;
 
     delete[] rhs_ptr;
     delete[] matrix_ptr;

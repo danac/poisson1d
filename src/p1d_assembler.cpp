@@ -25,7 +25,7 @@
 
 namespace poisson1d {
 
-DistributedAssembler::DistributedAssembler(Real a_, Real b_, UInt n_, std::string rhs)
+DistributedAssembler::DistributedAssembler(Real a_, Real b_, size_t n_, std::string rhs)
 :a(a_), b(b_), n(n_), rhs_func(rhs)
 {
     //rhs_ptr = new Real[n];
@@ -70,13 +70,13 @@ void DistributedAssembler::assemble_matrix(Real* matrix_ptr) const
     Real coef1 = -1/dx;
     Real coef2 = 2/dx;
 
-    //Very simple "(-1)-2-(-1)-style matrix for now
-    matrix_ptr[0] = coef1;
-    matrix_ptr[1] = coef2;
-    matrix_ptr[3*n-1] = coef2;
-    matrix_ptr[3*n-2] = coef1;
+    // Very simple "(-1)-2-(-1)-style matrix for now because regular mesh
+    matrix_ptr[0] = coef2;
+    matrix_ptr[1] = coef1;
+    matrix_ptr[3*n-4] = coef1;
+    matrix_ptr[3*n-3] = coef2;
 
-    for (std::size_t i(2); i < 3*n-2; i+=3)
+    for (std::size_t i(2); i < 3*n-4; i+=3)
     {
         matrix_ptr[i] = coef1;
         matrix_ptr[i+1] = coef2;

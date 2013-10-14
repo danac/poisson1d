@@ -32,7 +32,7 @@ namespace poisson1d {
 class DistributedAssembler
 {
     public:
-        DistributedAssembler(Real a, Real b, UInt n, std::string rhs);
+        DistributedAssembler(Real a, Real b, size_t n, std::string rhs);
         ~DistributedAssembler();
 
         void assemble_rhs(Real* rhs_ptr) const;
@@ -43,7 +43,7 @@ class DistributedAssembler
 
         Real a;
         Real b;
-        UInt n;
+        size_t n;
         std::string rhs_func;
 };
 
