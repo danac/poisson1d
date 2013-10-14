@@ -1,22 +1,30 @@
-include_directories(${Boost_INCLUDE_DIRS}} ${PYTHON_INCLUDE_DIRS} ${MUPARSER_INCLUDE_DIRS})
-include_directories(${CMAKE_SOURCE_DIR}/src)
+option(BUILD_POISSON1D_TESTS "Build the tests." ON)
+option(BUILD_POISSON1D_TESTS "Build the tests." OFF)
 
-macro(add_cpp_test name)
-add_executable(${name} ${name}.cpp)
-add_test(${name} ${name})
-endmacro()
+if(BUILD_POISSON1D_TESTS)
 
-python_add_module(test_boost_python test_boost_python.cpp)
-file(COPY test_boost_python.py DESTINATION .)
-add_test(test_boost_python test_boost_python.py)
-target_link_libraries(test_boost_python ${Boost_LIBRARIES})
+    include_directories(${Boost_INCLUDE_DIRS}} ${PYTHON_INCLUDE_DIRS} ${MUPARSER_INCLUDE_DIRS})
+    include_directories(${CMAKE_SOURCE_DIR}/src)
 
-add_cpp_test(test_zeromq)
-target_link_libraries(test_zeromq ${ZeroMQ_LIBRARIES})
+    python_add_module(test_boost_python test_boost_python.cpp)
+    file(COPY test_boost_python.py DESTINATION .)
+    add_test(test_boost_python test_boost_python.py)
+    target_link_libraries(test_boost_python ${Boost_LIBRARIES})
 
-add_cpp_test(test_muparser)
-target_link_libraries(test_muparser ${MUPARSER_LIBRARIES})
+    add_executable(test_zeromq test_zeromq.cpp)
+    add_test(test_zeromq test_zeromq)
+    target_link_libraries(test_zeromq ${ZeroMQ_LIBRARIES})
 
-add_cpp_test(test_assembler)
-target_link_libraries(test_assembler ${MUPARSER_LIBRARIES})
-target_link_libraries(test_assembler p1d_assembler)
+    macro(add_cpp_test name)
+    add_executable(${name} ${name}.cpp)
+    add_test(${name} ${name})
+    target_link_libraries(${name} poisson1d)
+    endmacro()
+
+    add_cpp_test(test_muparser)
+
+    add_cpp_test(test_assembler)
+
+    add_cpp_test(test_solver)
+
+endif(BUILD_POISSON1D_TESTS)
