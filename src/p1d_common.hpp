@@ -21,10 +21,15 @@
  *
  */
 
+#ifndef P1D_COMMON
+#define P1D_COMMON
+
 namespace poisson1d {
 
 typedef unsigned int UInt;
 typedef int Int;
 typedef double Real;
 
-}
+} //namespace poisson1d
+
+#endif //P1D_COMMON
