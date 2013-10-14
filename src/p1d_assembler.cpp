@@ -28,26 +28,26 @@ namespace poisson1d {
 DistributedAssembler::DistributedAssembler(Real a_, Real b_, UInt n_, std::string rhs)
 :a(a_), b(b_), n(n_), rhs_func(rhs)
 {
-    rhs_ptr = new Real[n];
-    Real dx = (b-a)/n;
+    //rhs_ptr = new Real[n];
+    //Real dx = (b-a)/n;
 
-    for(UInt i(0); i < n; ++i)
-    {
-        rhs_ptr[i] = a+i*dx;
-    }
+    //for(UInt i(0); i < n; ++i)
+    //{
+        //rhs_ptr[i] = a+i*dx;
+    //}
 
-    matrix_ptr = new Real[n*3];
+    //matrix_ptr = new Real[n*3];
 }
 
 
 DistributedAssembler::~DistributedAssembler()
 {
-    delete[] rhs_ptr;
-    delete[] matrix_ptr;
+    //delete[] rhs_ptr;
+    //delete[] matrix_ptr;
 }
 
 
-void DistributedAssembler::assemble_rhs()
+void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
 {
     //Initialize the expression parser
     mu::Parser p;
@@ -59,34 +59,29 @@ void DistributedAssembler::assemble_rhs()
 
     for (std::size_t i(0); i < n; ++i)
     {
-        x = rhs_ptr[i];
+        x = a+i*dx;
         rhs_ptr[i] = p.Eval();
     }
 }
 
-const Real* DistributedAssembler::get_rhs_ptr() const
-{
-    return rhs_ptr;
-}
-
-void DistributedAssembler::assemble_matrix()
+void DistributedAssembler::assemble_matrix(Real* matrix_ptr) const
 {
     Real dx = (b-a)/n;
     Real coef1 = -1/dx;
     Real coef2 = 2/dx;
 
     //Very simple "(-1)-2-(-1)-style matrix for now
-    for (std::size_t i(0); i < 3*n; i+=3)
+    matrix_ptr[0] = coef1;
+    matrix_ptr[1] = coef2;
+    matrix_ptr[3*n-1] = coef2;
+    matrix_ptr[3*n-2] = coef1;
+
+    for (std::size_t i(2); i < 3*n-2; i+=3)
     {
         matrix_ptr[i] = coef1;
         matrix_ptr[i+1] = coef2;
         matrix_ptr[i+2] = coef1;
     }
-}
-
-const Real* DistributedAssembler::get_matrix_ptr() const
-{
-    return matrix_ptr;
 }
 
 } //namespace poisson1d

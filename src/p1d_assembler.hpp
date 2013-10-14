@@ -27,33 +27,26 @@
 #include <string>
 #include "p1d_common.hpp"
 
-namespace poisson1d{
+namespace poisson1d {
 
 class DistributedAssembler
 {
     public:
-
         DistributedAssembler(Real a, Real b, UInt n, std::string rhs);
         ~DistributedAssembler();
 
-        void assemble_rhs();
-        const Real* get_rhs_ptr() const;
+        void assemble_rhs(Real* rhs_ptr) const;
 
-        void assemble_matrix();
-        const Real* get_matrix_ptr() const;
+        void assemble_matrix(Real* matrix_ptr) const;
 
     private:
-        void init_parser();
 
         Real a;
         Real b;
         UInt n;
         std::string rhs_func;
-
-        Real* rhs_ptr;
-        Real* matrix_ptr;
 };
 
 } //namespace poisson1d
 
-#endif
+#endif //P1D_ASSEMBLER
