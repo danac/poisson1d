@@ -1,5 +1,5 @@
 /*
- * main.cpp
+ * test_zeromq.cpp
  *
  * Copyright 2013 Dana Christen <dana.christen@gmail.com>
  *
