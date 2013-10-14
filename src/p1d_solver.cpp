@@ -24,24 +24,63 @@
 #include "p1d_solver.hpp"
 #include <cassert>
 #include <Eigen/IterativeLinearSolvers>
+#include <iostream>
 
 namespace poisson1d {
 
-Solver::Solver(const Real* A_, const Real* b_)
-: A(A_), b(b_)
-{}
+Solver::Solver(const Real* matrix_ptr, const Real* rhs_ptr, size_t n_)
+: A(n_,n_), b(n_), n(n_)
+{
+    load_matrix_array(matrix_ptr);
+    load_rhs_array(rhs_ptr);
+}
 
 Solver::~Solver()
 {}
 
-void Solver::solve(Real* x) const
+void Solver::load_matrix_array(const Real* matrix_ptr)
 {
-    //Eigen::ConjugateGradient<EigenSpMat, Eigen::Upper> solver;
-    //solver.compute(*A);
-    //assert(solver.info() == Eigen::Success);
-    //x = solver.solve(*b);
-    //assert(solver.info() == Eigen::Success);
-    //return x;
+    A.reserve(Eigen::VectorXi::Constant(n,3));
+    A.insert(0,0) = matrix_ptr[0];
+    A.insert(0,1) = matrix_ptr[1];
+    for(std::size_t i(1); i < n-1; ++i)
+    {
+        A.insert(i,i-1) = matrix_ptr[i*3-1];
+        A.insert(i,i) = matrix_ptr[i*3];
+        A.insert(i,i+1) = matrix_ptr[i*3+1];
+    }
+    A.insert(n-1,n-2) = matrix_ptr[(n-1)*3-1];
+    A.insert(n-1,n-1) = matrix_ptr[(n-1)*3];
+    A.makeCompressed();
+}
+
+void Solver::load_rhs_array(const Real* rhs_ptr)
+{
+    for(std::size_t i(0); i < n; ++i)
+    {
+        b(i) = rhs_ptr[i];
+    }
+}
+
+void Solver::solve(Real* x_ptr)
+{
+    Vec x(n);
+    Eigen::ConjugateGradient<SparseMat> solver;
+    solver.setMaxIterations(n*10);
+
+    solver.compute(A);
+    assert(solver.info() == Eigen::Success);
+
+    x = solver.solve(b);
+    //std::cout << "#iterations:     " << solver.iterations() << std::endl;
+    //std::cout << "estimated error: " << solver.error()      << std::endl;
+    //std::cout << solver.info() <<  " " << Eigen::Success;
+    assert(solver.info() == Eigen::Success);
+
+    for(std::size_t i(0); i < n; ++i)
+    {
+        x_ptr[i] = x(i);
+    }
 }
 
 } //namespace poisson1d
