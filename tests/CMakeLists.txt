@@ -1,4 +1,5 @@
 include_directories(${Boost_INCLUDE_DIRS}} ${PYTHON_INCLUDE_DIRS} ${MUPARSER_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
 macro(add_cpp_test name)
 add_executable(${name} ${name}.cpp)
@@ -15,3 +16,7 @@ target_link_libraries(test_zeromq ${ZeroMQ_LIBRARIES})
 
 add_cpp_test(test_muparser)
 target_link_libraries(test_muparser ${MUPARSER_LIBRARIES})
+
+add_cpp_test(test_assembler)
+target_link_libraries(test_assembler ${MUPARSER_LIBRARIES})
+target_link_libraries(test_assembler p1d_assembler)
