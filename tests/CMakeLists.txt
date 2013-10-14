@@ -3,7 +3,7 @@ option(BUILD_POISSON1D_TESTS "Build the tests." OFF)
 
 if(BUILD_POISSON1D_TESTS)
 
-    include_directories(${Boost_INCLUDE_DIRS}} ${PYTHON_INCLUDE_DIRS} ${MUPARSER_INCLUDE_DIRS})
+    include_directories(${Boost_INCLUDE_DIRS}} ${PYTHON_INCLUDE_DIRS} ${MUPARSER_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)
 
     python_add_module(test_boost_python test_boost_python.cpp)
