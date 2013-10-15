@@ -20,67 +20,109 @@
  *
  *
  */
+
 #include "p1d_assembler.hpp"
 #include "muParser.h"
 
 namespace poisson1d {
 
-DistributedAssembler::DistributedAssembler(Real a_, Real b_, size_t n_, std::string rhs)
-:a(a_), b(b_), n(n_), rhs_func(rhs)
+DistributedAssembler::DistributedAssembler(const Mesh & mesh, const std::string & rhs)
+: mesh_ptr(&mesh), rhs_func(rhs)
 {
-    //rhs_ptr = new Real[n];
-    //Real dx = (b-a)/n;
-
-    //for(UInt i(0); i < n; ++i)
-    //{
-        //rhs_ptr[i] = a+i*dx;
-    //}
-
-    //matrix_ptr = new Real[n*3];
+    a = mesh_ptr->getLowerBound();
+    b = mesh_ptr->getUpperBound();
+    n = mesh->getNbNodes();
 }
-
 
 DistributedAssembler::~DistributedAssembler()
-{
-    //delete[] rhs_ptr;
-    //delete[] matrix_ptr;
-}
-
+{}
 
 void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
 {
-    //Initialize the expression parser
     mu::Parser p;
     Real x;
     p.DefineVar("x", &x);
     p.SetExpr(rhs_func);
 
-    Real dx = (b-a)/n;
+    Mesh::const_iterator mesh_it;
 
-    for (std::size_t i(0); i < n; ++i)
+    for (mesh_it = mesh_ptr->begin(); mesh_it != mesh_ptr->end(); ++mesh_it)
     {
-        x = a+i*dx;
+        x = *mesh_ptr;
         rhs_ptr[i] = p.Eval();
     }
 }
 
+/**
+ * P1 finite elements matrix assembly for 1D Poisson equation with Dirichlet boundary conditions
+ * */
 void DistributedAssembler::assemble_matrix(Real* matrix_ptr) const
 {
-    Real dx = (b-a)/n;
-    Real coef1 = -1/dx;
-    Real coef2 = 2/dx;
+    Real dx;
+    Real left_node;
+    Real middle_node;
+    Real right_node;
+
+    MeshGlobalPosition position = mesh_ptr->getGlobalPosition();
+
+    // Compute the number of elements in the matrix and the index of the last but one row
+    size_t m;
+    size_t loop_end;
+
+    if(position == _full)
+    {
+        m = 3*(n-2)+2; // n-2 rows with 3 coefs and 1 coef on both first and last rows
+        loop_end = m-1;
+    }
+    else if(position == _left)
+    {
+        m = 3*(n-2)+1; // n-2 rows with 3 coefs because the last node is a ghost
+        loop_end = m;
+    }
+    else if(position == _right)
+    {
+        m = 3*(n-2)+1; // n-2 rows with 3 coefs because the last node is a ghost
+        loop_end = m-1;
+    }
+    else
+    {
+        m = 3*(n-2); // n-2 rows with 3 coefs beacuse both ends are ghosts
+        loop_end = m;
+    }
+
+    size_t counter(0);
+    Mesh::const_iterator mesh_it = mesh_ptr->begin();
 
     // Very simple "(-1)-2-(-1)-style matrix for now because regular mesh
-    matrix_ptr[0] = coef2;
-    matrix_ptr[1] = coef1;
-    matrix_ptr[3*n-4] = coef1;
-    matrix_ptr[3*n-3] = coef2;
-
-    for (std::size_t i(2); i < 3*n-4; i+=3)
+    if(position == _left || position == _full)
     {
-        matrix_ptr[i] = coef1;
-        matrix_ptr[i+1] = coef2;
-        matrix_ptr[i+2] = coef1;
+        matrix_ptr[0] = 1.;
+        counter += 2;
+    }
+
+    middle_node = *mesh_it;
+    ++mesh_it;
+    rihgt_node = *mesh_it;
+    ++mesh_it;
+
+    for (std::size_t i(counter+1); i < loop_end-1; i+=3)
+    {
+        left_node = middle_node;
+        middle_node = right_node;
+        right_node = *mesh_it;
+        dx_left = middle_node - left_node;
+        dx_right = right_node - middle_node;
+
+        matrix_ptr[i-1] = -1./dx1;
+        matrix_ptr[i] = 1./dx1 + 1./dx2;
+        matrix_ptr[i+1] = -1./dx1;
+
+        ++mesh_it;
+    }
+
+    if(position == _right || position == _full)
+    {
+        matrix_ptr[m-1] = 1.;
     }
 }
 

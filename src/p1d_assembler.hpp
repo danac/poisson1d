@@ -26,13 +26,14 @@
 
 #include <string>
 #include "p1d_common.hpp"
+#include "p1d_mesh.hpp"
 
 namespace poisson1d {
 
 class DistributedAssembler
 {
     public:
-        DistributedAssembler(Real a, Real b, size_t n, std::string rhs);
+        DistributedAssembler(const Mesh & mesh, const std::string & rhs);
         ~DistributedAssembler();
 
         void assemble_rhs(Real* rhs_ptr) const;
@@ -40,11 +41,11 @@ class DistributedAssembler
         void assemble_matrix(Real* matrix_ptr) const;
 
     private:
-
+        const Mesh* mesh_ptr;
+        std::string rhs_func;
         Real a;
         Real b;
         size_t n;
-        std::string rhs_func;
 };
 
 } //namespace poisson1d
