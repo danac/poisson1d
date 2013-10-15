@@ -33,19 +33,24 @@ namespace poisson1d {
 class DistributedAssembler
 {
     public:
-        DistributedAssembler(const Mesh & mesh, const std::string & rhs);
+        DistributedAssembler(const Mesh & mesh, const std::string & rhs, Real fa, Real fb);
         ~DistributedAssembler();
 
         void assemble_rhs(Real* rhs_ptr) const;
+        Real* assemble_rhs_alloc() const;
 
         void assemble_matrix(Real* matrix_ptr) const;
+        Real* assemble_matrix_alloc() const;
 
     private:
         const Mesh* mesh_ptr;
         std::string rhs_func;
         Real a;
         Real b;
+        Real fa;
+        Real fb;
         size_t n;
+        size_t nnz;
 };
 
 } //namespace poisson1d

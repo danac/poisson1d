@@ -26,8 +26,6 @@
 
 namespace poisson1d {
 
-typedef unsigned int UInt;
-typedef int Int;
 typedef double Real;
 
 } //namespace poisson1d

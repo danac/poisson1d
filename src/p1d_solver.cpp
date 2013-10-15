@@ -24,7 +24,6 @@
 #include "p1d_solver.hpp"
 #include <cassert>
 #include <Eigen/IterativeLinearSolvers>
-#include <iostream>
 
 namespace poisson1d {
 
@@ -40,17 +39,21 @@ Solver::~Solver()
 
 void Solver::load_matrix_array(const Real* matrix_ptr)
 {
+    size_t m = 3*(n-2)+2;
     A.reserve(Eigen::VectorXi::Constant(n,3));
     A.insert(0,0) = matrix_ptr[0];
-    A.insert(0,1) = matrix_ptr[1];
+    //printf("%d,%d=%f\n", 0, 0, matrix_ptr[0]);
     for(std::size_t i(1); i < n-1; ++i)
     {
-        A.insert(i,i-1) = matrix_ptr[i*3-1];
-        A.insert(i,i) = matrix_ptr[i*3];
-        A.insert(i,i+1) = matrix_ptr[i*3+1];
+        A.insert(i,i-1) = matrix_ptr[(i-1)*3+1];
+        //printf("%lu,%lu=%f ", i, i-1, matrix_ptr[(i-1)*3+1]);
+        A.insert(i,i) = matrix_ptr[(i-1)*3+2];
+        //printf("%lu,%lu=%f ", i, i, matrix_ptr[(i-1)*3+2]);
+        A.insert(i,i+1) = matrix_ptr[(i-1)*3+3];
+        //printf("%lu,%lu=%f\n", i, i+1, matrix_ptr[(i-1)*3+3]);
     }
-    A.insert(n-1,n-2) = matrix_ptr[(n-1)*3-1];
-    A.insert(n-1,n-1) = matrix_ptr[(n-1)*3];
+    A.insert(n-1,n-1) = matrix_ptr[m-1];
+    //printf("%lu,%lu=%f\n", n-1, n-1, matrix_ptr[m-1]);
     A.makeCompressed();
 }
 
@@ -65,8 +68,8 @@ void Solver::load_rhs_array(const Real* rhs_ptr)
 void Solver::solve(Real* x_ptr)
 {
     Vec x(n);
-    Eigen::ConjugateGradient<SparseMat> solver;
-    solver.setMaxIterations(n*10);
+    Eigen::BiCGSTAB<SparseMat> solver;
+    //solver.setMaxIterations(n*10);
 
     solver.compute(A);
     assert(solver.info() == Eigen::Success);
