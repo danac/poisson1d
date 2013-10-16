@@ -38,6 +38,8 @@ class Merger
         void merge_rhs(const Real* matrix_ptr, size_t job_id);
 
         const Real* get_matrix_ptr() const;
+        const Real* get_rhs_ptr() const;
+
         size_t get_matrix_nnz() const;
 
     private:

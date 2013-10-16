@@ -69,13 +69,19 @@ const Real* Merger::get_matrix_ptr() const
     return full_matrix_ptr;
 }
 
+const Real* Merger::get_rhs_ptr() const
+{
+    return full_rhs_ptr;
+}
+
+
 size_t Merger::get_job_rows(size_t job_id) const
 {
     size_t num_rows = (size_t)(n/num_jobs);
 
-    if(job_id == num_jobs)
+    if(job_id == num_jobs-1)
     {
-        num_rows = n-n*num_rows;
+        num_rows += 1;
     }
 
     return num_rows;
