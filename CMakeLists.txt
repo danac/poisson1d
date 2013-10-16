@@ -5,7 +5,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(ZeroMQ REQUIRED)
 find_package(MuParser)
-find_package(Boost COMPONENTS python REQUIRED)
+find_package(Boost REQUIRED COMPONENTS python)
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 set(Eigen3_FIND_VERSION_MAJOR 3)

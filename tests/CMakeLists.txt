@@ -23,6 +23,8 @@ if(BUILD_POISSON1D_TESTS)
 
     add_cpp_test(test_muparser)
 
+    add_cpp_test(test_mesh)
+
     add_cpp_test(test_assembler)
 
     add_cpp_test(test_solver)
@@ -30,5 +32,6 @@ if(BUILD_POISSON1D_TESTS)
     add_cpp_test(test_merger_rhs)
 
     add_cpp_test(test_merger_matrix)
+
 
 endif(BUILD_POISSON1D_TESTS)

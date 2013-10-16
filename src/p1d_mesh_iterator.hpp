@@ -1,5 +1,5 @@
 /*
- * p1d_mesh.hpp
+ * p1d_mesh_iterator.hpp
  *
  * Copyright 2013 Dana Christen <dana.christen@gmail.com>
  *
@@ -21,45 +21,50 @@
  *
  */
 
-#ifndef P1D_MESH
-#define P1D_MESH
+#ifndef P1D_MESH_ITERATOR
+#define P1D_MESH_ITERATOR
 
+#include <boost/iterator/iterator_facade.hpp>
 #include "p1d_common.hpp"
-#include "p1d_mesh_iterator.hpp"
 
 namespace poisson1d {
 
-enum MeshGlobalPosition {
-    _left,
-    _middle,
-    _right,
-    _full
-};
+class Mesh;
 
-class MeshBaseIterator;
-
-class Mesh {
-
+class MeshConstIterator
+  : public boost::iterator_facade<
+      MeshConstIterator,
+      const Real,
+      boost::forward_traversal_tag>
+{
     public:
-        Mesh(Real a, Real b, Real n, MeshGlobalPosition position);
-
-        typedef MeshConstIterator const_iterator;
-
-        size_t getNbNodes() const;
-        Real getLowerBound() const;
-        Real getUpperBound() const;
-        MeshGlobalPosition getGlobalPosition() const;
-        const_iterator begin() const;
-        const_iterator end() const;
+        MeshConstIterator();
+        MeshConstIterator(const MeshConstIterator & other);
 
     private:
-        friend class MeshBaseIterator;
-        Real a;
-        Real b;
-        MeshGlobalPosition position;
-        size_t n;
+        MeshConstIterator(const Mesh* mesh, size_t index_);
+
+        void increment();
+
+        void decrement();
+
+        void advance(size_t steps);
+
+        ptrdiff_t distance_to(MeshConstIterator const& other) const;
+
+        bool equal(MeshConstIterator const& other) const;
+
+        const Real& dereference() const;
+
+        void compute_node();
+
+        friend class boost::iterator_core_access;
+        friend class Mesh;
+
+        const Mesh* mesh_ptr;
+        size_t index;
+        Real node;
 };
 
 } //namespace poisson1d
-
 #endif

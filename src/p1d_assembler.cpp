@@ -67,13 +67,6 @@ void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
 {
     MeshGlobalPosition position = mesh_ptr->getGlobalPosition();
 
-    Mesh::const_iterator mesh_it = mesh_ptr->begin();
-    Mesh::const_iterator mesh_end = mesh_ptr->end();
-
-    // Skip nodes at both ends since they are either ghosts or enforced boundary values
-    --mesh_end;
-    ++mesh_it;
-
     size_t i(0);
 
     if(position == _left)
@@ -96,6 +89,13 @@ void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
     Real x;
     p.DefineVar("x", &x);
     p.SetExpr(rhs_func);
+
+    Mesh::const_iterator mesh_it = mesh_ptr->begin();
+    Mesh::const_iterator mesh_end = mesh_ptr->end();
+
+    // Skip nodes at both ends since they are either ghosts or enforced boundary values
+    --mesh_end;
+    ++mesh_it;
 
     for (; mesh_it != mesh_end; ++mesh_it, ++i)
     {
