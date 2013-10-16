@@ -79,7 +79,7 @@ size_t Merger::get_job_rows(size_t job_id) const
 {
     size_t num_rows = (size_t)(n/num_jobs);
 
-    if(job_id == num_jobs-1)
+    if(job_id == num_jobs-1 && n % num_jobs)
     {
         num_rows += 1;
     }

@@ -45,12 +45,12 @@ void dump_array(const Real* array, size_t size)
     cout << endl;
 }
 
-int main(int argc, char* argv[])
+void test_5_way_partitioning(size_t n)
 {
-    size_t n(51);
     size_t num_jobs(5);
     size_t num_rows = n/num_jobs;
-    size_t num_rows_last = num_rows+1;
+    size_t num_rows_last = num_rows + (n % num_jobs);
+
     Real array1[num_rows];
     Real array2[num_rows];
     Real array3[num_rows];
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
     merger.merge_rhs(array5, 4);
 
     const Real* full_array = merger.get_rhs_ptr();
-    dump_array(full_array, n);
+    //_array(full_array, n);
     for(size_t i(0); i < num_jobs; ++i)
     {
         for(size_t j(i*num_rows); j < (i+1)*num_rows; ++j)
@@ -80,7 +80,16 @@ int main(int argc, char* argv[])
             assert(full_array[j] == (Real)(i+1));
         }
     }
-    assert(full_array[num_jobs*num_rows] == num_jobs);
+    if(n % num_jobs)
+    {
+        assert(full_array[num_jobs*num_rows] == num_jobs);
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    test_5_way_partitioning(100);
+    test_5_way_partitioning(101);
 
     return 0;
 }

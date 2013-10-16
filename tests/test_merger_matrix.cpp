@@ -45,13 +45,12 @@ void dump_array(const Real* array, size_t size)
     cout << endl;
 }
 
-int main(int argc, char* argv[])
+void test_5_way_partitioning(size_t n)
 {
-    size_t n(16);
     size_t num_jobs(5);
     size_t num_nnz_first = n/num_jobs*3-2;
     size_t num_nnz = n/num_jobs*3;
-    size_t num_nnz_last = (n/num_jobs+1)*3-2;
+    size_t num_nnz_last = (n/num_jobs+(n%num_jobs))*3-2;
 
     Real array1[num_nnz_first];
     Real array2[num_nnz];
@@ -97,6 +96,13 @@ int main(int argc, char* argv[])
     {
         assert(full_array[i] == 5.);
     }
+
+}
+
+int main(int argc, char* argv[])
+{
+    test_5_way_partitioning(100);
+    test_5_way_partitioning(101);
 
     return 0;
 }
