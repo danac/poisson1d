@@ -9,6 +9,7 @@ set(poisson1d_src
         p1d_assembler.cpp
         p1d_solver.cpp
         p1d_mesh.cpp
+        p1d_merger.cpp
 )
 
 add_library(poisson1d ${poisson1d_src})

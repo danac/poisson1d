@@ -27,4 +27,6 @@ if(BUILD_POISSON1D_TESTS)
 
     add_cpp_test(test_solver)
 
+    add_cpp_test(test_merger)
+
 endif(BUILD_POISSON1D_TESTS)
