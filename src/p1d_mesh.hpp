@@ -26,6 +26,7 @@
 
 #include "p1d_common.hpp"
 #include "p1d_mesh_iterator.hpp"
+#include "p1d_packable.hpp"
 
 namespace poisson1d {
 
@@ -33,15 +34,17 @@ enum MeshGlobalPosition {
     _left,
     _middle,
     _right,
-    _full
+    _full,
+    _undefined
 };
 
 class MeshBaseIterator;
 
-class Mesh {
+class Mesh : public Packable {
 
     public:
         Mesh(Real a, Real b, Real n, MeshGlobalPosition position);
+        Mesh();
 
         typedef MeshConstIterator const_iterator;
 
@@ -51,6 +54,9 @@ class Mesh {
         MeshGlobalPosition getGlobalPosition() const;
         const_iterator begin() const;
         const_iterator end() const;
+
+        virtual void pack(std::ostream& buffer) const;
+        virtual void unpack(std::istream& buffer);
 
     private:
         friend class MeshBaseIterator;

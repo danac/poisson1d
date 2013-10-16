@@ -29,6 +29,10 @@ Mesh::Mesh(Real a_, Real b_, Real n_, MeshGlobalPosition position_)
 : a(a_), b(b_), n(n_), position(position_)
 {}
 
+Mesh::Mesh()
+: a(0.), b(0.), n(0), position(_undefined)
+{}
+
 size_t Mesh::getNbNodes() const
 {
     return n;
@@ -55,6 +59,21 @@ Mesh::const_iterator Mesh::begin() const {
 
 Mesh::const_iterator Mesh::end() const {
     return const_iterator(this, n);
+}
+
+void Mesh::pack(std::ostream& buffer) const
+{
+    buffer << a << b << n << static_cast<int>(position);
+}
+
+void Mesh::unpack(std::istream& buffer)
+{
+    buffer >> a;
+    buffer >> b;
+    buffer >> n;
+    int position_int(0);
+    buffer >> position_int;
+    position = static_cast<MeshGlobalPosition>(position_int);
 }
 
 } //namespace poisson1d
