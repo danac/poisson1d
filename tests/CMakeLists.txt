@@ -25,6 +25,8 @@ if(BUILD_POISSON1D_TESTS)
 
     add_cpp_test(test_mesh)
 
+    add_cpp_test(test_mesh_packing)
+
     add_cpp_test(test_assembler)
 
     add_cpp_test(test_solver)
