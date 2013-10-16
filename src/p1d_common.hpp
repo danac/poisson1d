@@ -24,6 +24,8 @@
 #ifndef P1D_COMMON
 #define P1D_COMMON
 
+#include <cstddef>
+
 namespace poisson1d {
 
 typedef double Real;
