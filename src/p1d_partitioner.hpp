@@ -33,9 +33,12 @@ class Partitioner
 {
     public:
         Partitioner(const Mesh& mesh, size_t num_jobs);
+        ~Partitioner();
+
+        Mesh* get_partitioned_mesh_alloc(size_t rank) const;
 
     private:
-        const Mesh* mesh_ptr;
+        const Mesh* full_mesh_ptr;
         size_t num_jobs;
 };
 
