@@ -37,9 +37,9 @@ Mesh* Partitioner::get_partitioned_mesh_alloc(size_t rank) const
 {
     assert(rank < num_jobs);
 
-    size_t n = full_mesh_ptr->getNbNodes();
-    Real a = full_mesh_ptr->getLowerBound();
-    Real b = full_mesh_ptr->getUpperBound();
+    size_t n = full_mesh_ptr->get_num_nodes();
+    Real a = full_mesh_ptr->get_lower_bound();
+    Real b = full_mesh_ptr->get_upper_bound();
 
     Mesh::const_iterator mesh_it = full_mesh_ptr->begin();
 

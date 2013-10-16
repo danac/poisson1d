@@ -43,10 +43,10 @@ int main(int argc, char* argv[])
 
     unpacked_mesh.unpack(stream);
 
-    assert(mesh.getLowerBound() == a);
-    assert(mesh.getUpperBound() == b);
-    assert(mesh.getNbNodes() == n);
-    assert(mesh.getGlobalPosition() == position);
+    assert(mesh.get_lower_bound() == a);
+    assert(mesh.get_upper_bound() == b);
+    assert(mesh.get_num_nodes() == n);
+    assert(mesh.get_global_position() == position);
 
     return 0;
 }

@@ -29,15 +29,15 @@ namespace poisson1d {
 DistributedAssembler::DistributedAssembler(const Mesh & mesh, const std::string & rhs, Real fa_, Real fb_)
 : mesh_ptr(&mesh),
   rhs_func(rhs),
-  a(mesh.getLowerBound()),
-  b(mesh.getUpperBound()),
-  n(mesh.getNbNodes()),
+  a(mesh.get_lower_bound()),
+  b(mesh.get_upper_bound()),
+  n(mesh.get_num_nodes()),
   nnz(0),
   fa(fa_),
   fb(fb_),
   rhs_size(0)
 {
-    MeshGlobalPosition position = mesh_ptr->getGlobalPosition();
+    MeshGlobalPosition position = mesh_ptr->get_global_position();
     if(position == _full)
     {
         nnz = 3*(n-2)+2; // n-2 rows with 3 coefs and 1 coef on both first and last rows
@@ -65,7 +65,7 @@ DistributedAssembler::~DistributedAssembler()
 
 void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
 {
-    MeshGlobalPosition position = mesh_ptr->getGlobalPosition();
+    MeshGlobalPosition position = mesh_ptr->get_global_position();
 
     size_t i(0);
 
@@ -107,7 +107,7 @@ void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
 
 Real* DistributedAssembler::assemble_rhs_alloc() const
 {
-    MeshGlobalPosition position = mesh_ptr->getGlobalPosition();
+    MeshGlobalPosition position = mesh_ptr->get_global_position();
 
     Real* rhs = new Real[rhs_size];
     assemble_rhs(rhs);
@@ -119,7 +119,7 @@ Real* DistributedAssembler::assemble_rhs_alloc() const
  * */
 void DistributedAssembler::assemble_matrix(Real* matrix_ptr) const
 {
-    MeshGlobalPosition position = mesh_ptr->getGlobalPosition();
+    MeshGlobalPosition position = mesh_ptr->get_global_position();
 
     size_t loop_end;
 

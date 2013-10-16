@@ -44,7 +44,7 @@ MeshConstIterator::MeshConstIterator(const Mesh* mesh, size_t index_)
 
 void MeshConstIterator::increment()
 {
-    size_t n = mesh_ptr->getNbNodes();
+    size_t n = mesh_ptr->get_num_nodes();
     if(index != n)
     {
         index += 1;
@@ -63,7 +63,7 @@ void MeshConstIterator::decrement()
 
 void MeshConstIterator::advance(size_t steps)
 {
-    size_t n = mesh_ptr->getNbNodes();
+    size_t n = mesh_ptr->get_num_nodes();
     if(index <= n-steps)
     {
         index += steps;
@@ -92,9 +92,9 @@ const Real& MeshConstIterator::dereference() const
 
 void MeshConstIterator::compute_node()
 {
-    Real a = mesh_ptr->getLowerBound();
-    Real b = mesh_ptr->getUpperBound();
-    Real n = mesh_ptr->getNbNodes();
+    Real a = mesh_ptr->get_lower_bound();
+    Real b = mesh_ptr->get_upper_bound();
+    Real n = mesh_ptr->get_num_nodes();
     Real dx = (b-a)/n;
     node = index*dx;
 }

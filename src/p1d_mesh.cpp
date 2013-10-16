@@ -33,22 +33,22 @@ Mesh::Mesh()
 : a(0.), b(0.), n(0), position(_undefined)
 {}
 
-size_t Mesh::getNbNodes() const
+size_t Mesh::get_num_nodes() const
 {
     return n;
 }
 
-Real Mesh::getLowerBound() const
+Real Mesh::get_lower_bound() const
 {
     return a;
 }
 
-Real Mesh::getUpperBound() const
+Real Mesh::get_upper_bound() const
 {
     return b;
 }
 
-MeshGlobalPosition Mesh::getGlobalPosition() const
+MeshGlobalPosition Mesh::get_global_position() const
 {
     return position;
 }

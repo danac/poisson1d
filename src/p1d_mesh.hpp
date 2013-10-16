@@ -48,10 +48,10 @@ class Mesh : public Packable {
 
         typedef MeshConstIterator const_iterator;
 
-        size_t getNbNodes() const;
-        Real getLowerBound() const;
-        Real getUpperBound() const;
-        MeshGlobalPosition getGlobalPosition() const;
+        size_t get_num_nodes() const;
+        Real get_lower_bound() const;
+        Real get_upper_bound() const;
+        MeshGlobalPosition get_global_position() const;
         const_iterator begin() const;
         const_iterator end() const;
 
