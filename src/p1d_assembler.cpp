@@ -27,24 +27,36 @@
 namespace poisson1d {
 
 DistributedAssembler::DistributedAssembler(const Mesh & mesh, const std::string & rhs, Real fa_, Real fb_)
-: mesh_ptr(&mesh), rhs_func(rhs), a(mesh.getLowerBound()), b(mesh.getUpperBound()), n(mesh.getNbNodes()), nnz(0), fa(fa_), fb(fb_)
+: mesh_ptr(&mesh),
+  rhs_func(rhs),
+  a(mesh.getLowerBound()),
+  b(mesh.getUpperBound()),
+  n(mesh.getNbNodes()),
+  nnz(0),
+  fa(fa_),
+  fb(fb_),
+  rhs_size(0)
 {
     MeshGlobalPosition position = mesh_ptr->getGlobalPosition();
     if(position == _full)
     {
         nnz = 3*(n-2)+2; // n-2 rows with 3 coefs and 1 coef on both first and last rows
+        rhs_size = n;
     }
     else if(position == _left)
     {
         nnz = 3*(n-2)+1; // n-2 rows with 3 coefs because the last node is a ghost
+        rhs_size = n-1;
     }
     else if(position == _right)
     {
         nnz = 3*(n-2)+1; // n-2 rows with 3 coefs because the last node is a ghost
+        rhs_size = n-1;
     }
     else
     {
         nnz = 3*(n-2); // n-2 rows with 3 coefs beacuse both ends are ghosts
+        rhs_size = n-2;
     }
 }
 
@@ -57,6 +69,8 @@ void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
 
     Mesh::const_iterator mesh_it = mesh_ptr->begin();
     Mesh::const_iterator mesh_end = mesh_ptr->end();
+
+    // Skip nodes at both ends since they are either ghosts or enforced boundary values
     --mesh_end;
     ++mesh_it;
 
@@ -76,7 +90,6 @@ void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
         rhs_ptr[0] = fa;
         ++i;
         rhs_ptr[n-1] = fb;
-
     }
 
     mu::Parser p;
@@ -95,19 +108,7 @@ void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
 Real* DistributedAssembler::assemble_rhs_alloc() const
 {
     MeshGlobalPosition position = mesh_ptr->getGlobalPosition();
-    size_t rhs_size(0);
-    if(position == _full)
-    {
-        rhs_size = n;
-    }
-    else if(position == _left || position == _right)
-    {
-        rhs_size = n-1;
-    }
-    else
-    {
-        rhs_size = n-2;
-    }
+
     Real* rhs = new Real[rhs_size];
     assemble_rhs(rhs);
     return rhs;
@@ -186,6 +187,16 @@ Real* DistributedAssembler::assemble_matrix_alloc() const
     Real* matrix = new Real[nnz];
     assemble_matrix(matrix);
     return matrix;
+}
+
+size_t DistributedAssembler::get_matrix_nnz() const
+{
+    return nnz;
+}
+
+size_t DistributedAssembler::get_rhs_size() const
+{
+    return rhs_size;
 }
 
 } //namespace poisson1d

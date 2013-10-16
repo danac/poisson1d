@@ -42,6 +42,9 @@ class DistributedAssembler
         void assemble_matrix(Real* matrix_ptr) const;
         Real* assemble_matrix_alloc() const;
 
+        size_t get_matrix_nnz() const;
+        size_t get_rhs_size() const;
+
     private:
         const Mesh* mesh_ptr;
         std::string rhs_func;
@@ -51,6 +54,7 @@ class DistributedAssembler
         Real fb;
         size_t n;
         size_t nnz;
+        size_t rhs_size;
 };
 
 } //namespace poisson1d
