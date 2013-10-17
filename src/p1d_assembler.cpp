@@ -23,6 +23,7 @@
 
 #include "p1d_assembler.hpp"
 #include "muParser.h"
+#include <cassert>
 
 namespace poisson1d {
 
@@ -31,13 +32,15 @@ DistributedAssembler::DistributedAssembler(const Mesh & mesh, const std::string 
   rhs_func(rhs),
   a(mesh.get_lower_bound()),
   b(mesh.get_upper_bound()),
-  n(mesh.get_num_nodes()),
-  nnz(0),
   fa(fa_),
   fb(fb_),
+  n(mesh.get_num_nodes()),
+  nnz(0),
   rhs_size(0)
 {
     MeshGlobalPosition position = mesh_ptr->get_global_position();
+    assert(position != _undefined);
+
     if(position == _full)
     {
         nnz = 3*(n-2)+2; // n-2 rows with 3 coefs and 1 coef on both first and last rows
@@ -68,21 +71,29 @@ void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
     MeshGlobalPosition position = mesh_ptr->get_global_position();
 
     size_t i(0);
+    size_t rhs_size(0);
 
     if(position == _left)
     {
+        rhs_size = n-1;
         rhs_ptr[0] = fa;
         ++i;
     }
     else if(position == _right)
     {
-        rhs_ptr[n-2] = fb;
+        rhs_size = n-1;
+        rhs_ptr[rhs_size-1] = fb;
     }
     else if(position == _full)
     {
+        rhs_size = n;
         rhs_ptr[0] = fa;
         ++i;
-        rhs_ptr[n-1] = fb;
+        rhs_ptr[rhs_size-1] = fb;
+    }
+    else
+    {
+        rhs_size = n-2;
     }
 
     mu::Parser p;
@@ -101,14 +112,11 @@ void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
     {
         x = *mesh_it;
         rhs_ptr[i] = p.Eval();
-        //std::cout << "i=" << i << " val=" << rhs_ptr[i] << std::endl;
     }
 }
 
 Real* DistributedAssembler::assemble_rhs_alloc() const
 {
-    MeshGlobalPosition position = mesh_ptr->get_global_position();
-
     Real* rhs = new Real[rhs_size];
     assemble_rhs(rhs);
     return rhs;
@@ -121,15 +129,11 @@ void DistributedAssembler::assemble_matrix(Real* matrix_ptr) const
 {
     MeshGlobalPosition position = mesh_ptr->get_global_position();
 
-    size_t loop_end;
+    size_t loop_end(0);
 
     if(position == _full)
     {
         loop_end = nnz-1;
-    }
-    else if(position == _left)
-    {
-        loop_end = nnz;
     }
     else if(position == _right)
     {
@@ -149,11 +153,11 @@ void DistributedAssembler::assemble_matrix(Real* matrix_ptr) const
         counter += 1;
     }
 
-    Real dx_left;
-    Real dx_right;
-    Real left_node;
-    Real middle_node;
-    Real right_node;
+    Real dx_left(0.);
+    Real dx_right(0.);
+    Real left_node(0.);
+    Real middle_node(0.);
+    Real right_node(0.);
 
     middle_node = *mesh_it;
     ++mesh_it;

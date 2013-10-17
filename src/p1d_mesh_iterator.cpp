@@ -27,7 +27,7 @@
 namespace poisson1d {
 
 MeshConstIterator::MeshConstIterator()
-: node(0), mesh_ptr(NULL), index(0)
+: mesh_ptr(NULL), index(0), node(0)
 {}
 
 MeshConstIterator::MeshConstIterator(const MeshConstIterator & other)
@@ -95,8 +95,8 @@ void MeshConstIterator::compute_node()
     Real a = mesh_ptr->get_lower_bound();
     Real b = mesh_ptr->get_upper_bound();
     Real n = mesh_ptr->get_num_nodes();
-    Real dx = (b-a)/n;
-    node = index*dx;
+    Real dx = (b - a) / (n - 1);
+    node = index * dx;
 }
 
 } //namespace poisson1d

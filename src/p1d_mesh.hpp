@@ -62,8 +62,8 @@ class Mesh : public Packable {
         friend class MeshBaseIterator;
         Real a;
         Real b;
-        MeshGlobalPosition position;
         size_t n;
+        MeshGlobalPosition position;
 };
 
 } //namespace poisson1d

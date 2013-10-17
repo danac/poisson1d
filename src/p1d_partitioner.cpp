@@ -23,6 +23,7 @@
 
 #include "p1d_partitioner.hpp"
 #include <cassert>
+#include <iostream>
 
 namespace poisson1d {
 
@@ -43,12 +44,23 @@ Mesh* Partitioner::get_partitioned_mesh_alloc(size_t rank) const
 
     Mesh::const_iterator mesh_it = full_mesh_ptr->begin();
 
-    size_t n2 = n/num_jobs;
     Real a2(0);
     Real b2(0);
-
+    size_t n2(n/num_jobs);
+    size_t remainder = n % num_jobs;
     MeshGlobalPosition position(_middle);
 
+    size_t offset(0);
+
+    if(remainder != 0 && rank < remainder)
+    {
+        n2 += 1;
+        offset = n2 * rank;
+    }
+    else
+    {
+        offset = remainder * (n2 + 1) + (rank - remainder) * n2;
+    }
     if(rank == 0)
     {
         if(num_jobs == 1)
@@ -61,30 +73,29 @@ Mesh* Partitioner::get_partitioned_mesh_alloc(size_t rank) const
         {
             // We include a ghost node at the right end
             a2 = a;
-            b2 = mesh_it[(rank+1)*n2];
+            b2 = mesh_it[offset+n2];
             position = _left;
-
+            n2 += 1; // One ghost
         }
     }
     else if(rank == num_jobs-1)
     {
-        if(n % num_jobs)
-        {
-            n2 += 1;
-        }
-
         // We include a ghost node at the right end
-        a2 = mesh_it[rank*n2];
+        a2 = mesh_it[offset-1];
         b2 = b;
         position = _right;
+        n2 += 1;
     }
     else
     {
         // We include ghost nodes at each end
-        a2 = mesh_it[rank*n2-1];
-        b2 = mesh_it[(rank+1)*n2];
+        a2 = mesh_it[offset-1];
+        b2 = mesh_it[offset+n2];
+        n2 += 2;
     }
 
+    //std::cout << "-OFFSET " << offset << "-";
+    //std::cout << "-n2 " << n2 << "-";
     return new Mesh(a2, b2, n2, position);
 }
 

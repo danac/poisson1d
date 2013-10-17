@@ -53,12 +53,14 @@ void Merger::merge_matrix(const Real* matrix_ptr, size_t job_id)
 void Merger::merge_rhs(const Real* rhs_ptr, size_t job_id)
 {
     size_t offset = get_job_rows_offset(job_id);
+    //std::cout << "JOB " << job_id << " OFFSET " << offset << " JOB_ROWS " << get_job_rows(job_id) << std::endl;
     Real* target_ptr = full_rhs_ptr+offset;
     for(size_t i(0); i < get_job_rows(job_id); ++i)
     {
         target_ptr[i] = rhs_ptr[i];
     }
 }
+
 size_t Merger::get_matrix_nnz() const
 {
     return 3*(n-2)+2;
@@ -77,9 +79,10 @@ const Real* Merger::get_rhs_ptr() const
 
 size_t Merger::get_job_rows(size_t job_id) const
 {
-    size_t num_rows = (size_t)(n/num_jobs);
+    size_t num_rows = n/num_jobs;
+    size_t remainder = n % num_jobs;
 
-    if(job_id == num_jobs-1 && n % num_jobs)
+    if(remainder != 0 && job_id < remainder)
     {
         num_rows += 1;
     }
@@ -123,6 +126,7 @@ size_t Merger::get_job_nnz(size_t job_id) const
     {
         job_nnz = job_rows*3;
     }
+    return job_nnz;
 }
 
 size_t Merger::get_job_nnz_offset(size_t job_id) const

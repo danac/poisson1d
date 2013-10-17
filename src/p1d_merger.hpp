@@ -51,8 +51,8 @@ class Merger
         Real* full_matrix_ptr;
         Real* full_rhs_ptr;
 
-        size_t num_jobs;
         size_t n;
+        size_t num_jobs;
 };
 
 } //namespace poisson1d
