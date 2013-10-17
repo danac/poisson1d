@@ -40,9 +40,6 @@ void test_rhs_5_mesh(MeshGlobalPosition position)
     size_t n(5);
     string rhs_func("x");
     Real dx = (b-a)/(n-1);
-    size_t rhs_clip(0);
-    size_t matrix_loop_end(0);
-    size_t m(0);
 
     Real epsilon = std::numeric_limits<Real>::epsilon() * 100;
     printf("Admitted epsilon: %.2e\n", epsilon);
