@@ -27,13 +27,17 @@ if(BUILD_POISSON1D_TESTS)
 
     add_cpp_test(test_mesh_packing)
 
-    add_cpp_test(test_assembler)
+    add_cpp_test(test_assembler_matrix)
+
+    add_cpp_test(test_assembler_rhs)
 
     add_cpp_test(test_solver)
 
     add_cpp_test(test_merger_rhs)
 
     add_cpp_test(test_merger_matrix)
+
+    add_cpp_test(test_partitioner)
 
 
 endif(BUILD_POISSON1D_TESTS)

@@ -67,8 +67,7 @@ int main(int argc, char* argv[])
     size_t n(3);
     Real a(0), b(1);
     Real fa(10), fb(2);
-    Real dx((b-a)/n);
-    Real ref_value[3] = {1., 37./6, 1.};
+    Real ref_value[3] = {10., 25./4, 2.};
     Real epsilon = std::numeric_limits<Real>::epsilon();
 
     // n-by-n 1D poisson matrix has n-2 non-zeros
@@ -96,7 +95,7 @@ int main(int argc, char* argv[])
     {
         Real diff = std::abs(x_ptr[i] - ref_value[i]);
         printf(" %.8f (error %.8e)\n", x_ptr[i], diff);
-        //assert(diff < epsilon);
+        assert(diff < epsilon);
     }
     cout << endl;
 

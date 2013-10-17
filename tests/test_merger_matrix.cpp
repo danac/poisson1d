@@ -48,23 +48,38 @@ void dump_array(const Real* array, size_t size)
 void test_5_way_partitioning(size_t n)
 {
     size_t num_jobs(5);
-    size_t num_nnz_first = n/num_jobs*3-2;
-    size_t num_nnz = n/num_jobs*3;
-    size_t num_nnz_last = (n/num_jobs+(n%num_jobs))*3-2;
+    size_t num_nnz[num_jobs];
+    for(size_t i(0); i < num_jobs; ++i)
+    {
+        size_t num_rows = n/num_jobs;
+        if((n % num_jobs) != 0 && i < (n % num_jobs))
+        {
+            num_rows += 1;
+        }
 
-    Real array1[num_nnz_first];
-    Real array2[num_nnz];
-    Real array3[num_nnz];
-    Real array4[num_nnz];
-    Real array5[num_nnz_last];
+        if(i == 0 || i == num_jobs-1)
+        {
+            num_nnz[i] = num_rows*3-2;
+        }
+        else
+        {
+            num_nnz[i] = num_rows * 3;
+        }
+    }
+
+    Real array1[num_nnz[0]];
+    Real array2[num_nnz[1]];
+    Real array3[num_nnz[2]];
+    Real array4[num_nnz[3]];
+    Real array5[num_nnz[4]];
 
     Merger merger(n, num_jobs);
 
-    populate_array(array1, num_nnz_first, 1.0);
-    populate_array(array2, num_nnz, 2.0);
-    populate_array(array3, num_nnz, 3.0);
-    populate_array(array4, num_nnz, 4.0);
-    populate_array(array5, num_nnz_last, 5.0);
+    populate_array(array1, num_nnz[0], 1.0);
+    populate_array(array2, num_nnz[1], 2.0);
+    populate_array(array3, num_nnz[2], 3.0);
+    populate_array(array4, num_nnz[3], 4.0);
+    populate_array(array5, num_nnz[4], 5.0);
 
     merger.merge_matrix(array1, 0);
     merger.merge_matrix(array2, 1);
@@ -73,36 +88,25 @@ void test_5_way_partitioning(size_t n)
     merger.merge_matrix(array5, 4);
 
     const Real* full_array = merger.get_matrix_ptr();
-
-    size_t count(0);
-
-    for(size_t i(0); i < num_nnz_first; ++i)
+    size_t offset(0);
+    for(size_t j(0); j < num_jobs; ++j)
     {
-        assert(full_array[i] == 1.);
+        offset = ( (j == 0) ? 0 : offset+num_nnz[j-1] );
+        for(size_t i(offset); i < offset + num_nnz[j]; ++i)
+        {
+            //std::cout << "job=" << j << " i=" << i << " val=" << full_array[i] << endl;
+            assert(full_array[i] == Real(j)+1);
+        }
     }
-    for(size_t i(num_nnz_first); i < num_nnz; ++i)
-    {
-        assert(full_array[i] == 2.);
-    }
-    for(size_t i(num_nnz_first+num_nnz); i < num_nnz_first+num_nnz+num_nnz; ++i)
-    {
-        assert(full_array[i] == 3.);
-    }
-    for(size_t i(num_nnz_first+2*num_nnz); i < num_nnz_first+2*num_nnz+num_nnz; ++i)
-    {
-        assert(full_array[i] == 4.);
-    }
-    for(size_t i(num_nnz_first+3*num_nnz); i < num_nnz_first+3*num_nnz+num_nnz_last; ++i)
-    {
-        assert(full_array[i] == 5.);
-    }
-
 }
 
 int main(int argc, char* argv[])
 {
     test_5_way_partitioning(100);
     test_5_way_partitioning(101);
+    test_5_way_partitioning(102);
+    test_5_way_partitioning(103);
+    test_5_way_partitioning(104);
 
     return 0;
 }

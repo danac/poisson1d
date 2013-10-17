@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
     Real a(0.0);
     Real b(1.0);
     size_t n(10);
+    Real dx = (b-a)/(n-1);
 
     Real epsilon = std::numeric_limits<Real>::epsilon() * 100;
 
@@ -47,7 +48,7 @@ int main(int argc, char* argv[])
     printf("Testing forward iteration... \n");
     for(mesh_it = mesh.begin(); mesh_it != mesh.end(); ++mesh_it, ++i)
     {
-        Real expected_value = i*(b-a)/n;
+        Real expected_value = i*dx;
         Real diff = std::abs(*mesh_it - expected_value);
         printf(" i = %lu | *mesh_it = %.2f | expected %.2f | error %.2e \n", i, *mesh_it, expected_value, diff);
         assert(diff <= epsilon);
@@ -55,9 +56,9 @@ int main(int argc, char* argv[])
 
     i = 0;
     printf("Testing backward iteration... \n");
-    for(mesh_it = mesh.end(); mesh_it != mesh.begin(); --mesh_it, ++i)
+    for(mesh_it = mesh.end()-1; mesh_it != mesh.begin(); --mesh_it, ++i)
     {
-        Real expected_value = b-i*(b-a)/n;
+        Real expected_value = b-i*dx;
         Real diff = std::abs(*mesh_it - expected_value);
         printf(" i = %lu | *mesh_it = %.2f | expected %.2f | error %.2e \n", n-1-i, *mesh_it, expected_value, diff);
         assert(diff <= epsilon);
@@ -65,9 +66,9 @@ int main(int argc, char* argv[])
 
     printf("Testing random iteration... \n");
     mesh_it = mesh.begin();
-    for(int i(0); i < n-1; ++i)
+    for(size_t i(0); i < n-1; ++i)
     {
-        Real expected_value = i*(b-a)/n;
+        Real expected_value = i*dx;
         Real diff = std::abs(mesh_it[i] - expected_value);
         printf(" i = %lu | *mesh_it = %.2f | expected %.2f | error %.2e \n", n-1-i, *mesh_it, expected_value, diff);
         assert(diff <= epsilon);
