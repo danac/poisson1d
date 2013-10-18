@@ -93,8 +93,18 @@ size_t Mesh::get_packed_size() const
     size += sizeof(a);
     size += sizeof(b);
     size += sizeof(n);
-    size += sizeof(static_cast<int>(position));
+    size += sizeof(position);
     return size;
+}
+
+
+bool Mesh::operator==(const Mesh& other) const
+{
+    bool identical = (a == other.a &&
+                      b == other.b &&
+                      n == other.n &&
+                      position == other.position);
+    return identical;
 }
 
 } //namespace poisson1d

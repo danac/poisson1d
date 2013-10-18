@@ -32,20 +32,19 @@ namespace poisson1d {
 class Packable
 {
     public:
+        virtual ~Packable() {}
         virtual Byte* pack(Byte* const buffer) const = 0;
         virtual const Byte* unpack(const Byte* const buffer) = 0;
         virtual size_t get_packed_size() const = 0;
-        virtual ~Packable() {}
 
     protected:
         template<typename T>
         inline Byte* write_to_buffer(const T& var, Byte* const buffer) const
         {
             Byte* cursor = buffer;
-            const Byte * cast_value_ptr = reinterpret_cast<const Byte*>(&var);
-            size_t value_size = sizeof(T);
-            memcpy(cursor, cast_value_ptr, value_size);
-            cursor += value_size;
+            T * cast_cursor = reinterpret_cast<T*>(cursor);
+            *cast_cursor = var;
+            cursor += sizeof(T);
             return cursor;
         }
 
@@ -53,12 +52,12 @@ class Packable
         inline const Byte* read_from_buffer(T& var, const Byte* const buffer) const
         {
             const Byte* cursor = buffer;
-            const T* cast_cursor_ptr = reinterpret_cast<const T*>(cursor);
-            var = *cast_cursor_ptr;
-            size_t value_size = sizeof(T);
-            cursor += value_size;
+            const T* cast_cursor = reinterpret_cast<const T*>(cursor);
+            var = *cast_cursor;
+            cursor += sizeof(T);
             return cursor;
         }
+
 };
 
 //inline std::ostream& operator<<(std::ostream& stream, const Packable& serializable)
@@ -74,5 +73,7 @@ class Packable
 //}
 
 } //namespace poisson1d
+
+#include "p1d_packable.tmpl.hpp"
 
 #endif

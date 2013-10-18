@@ -22,7 +22,6 @@
  */
 
 #include "p1d_mesh.hpp"
-#include <sstream>
 #include <cassert>
 
 using namespace poisson1d;
@@ -43,13 +42,10 @@ int main(int argc, char* argv[])
     mesh.pack(buffer);
 
     Mesh unpacked_mesh;
-
     unpacked_mesh.unpack(buffer);
 
-    assert(unpacked_mesh.get_lower_bound() == a);
-    assert(unpacked_mesh.get_upper_bound() == b);
-    assert(unpacked_mesh.get_num_nodes() == n);
-    assert(unpacked_mesh.get_global_position() == position);
+    assert(unpacked_mesh == mesh);
 
+    delete[] buffer;
     return 0;
 }

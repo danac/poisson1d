@@ -39,5 +39,7 @@ if(BUILD_POISSON1D_TESTS)
 
     add_cpp_test(test_partitioner)
 
+    add_cpp_test(test_structs)
+
 
 endif(BUILD_POISSON1D_TESTS)

@@ -59,6 +59,8 @@ class Mesh : public Packable {
         virtual const Byte* unpack(const Byte* const buffer);
         virtual size_t get_packed_size() const;
 
+        bool operator==(const Mesh& other) const;
+
     private:
         friend class MeshBaseIterator;
         Real a;
