@@ -25,17 +25,53 @@
 #ifndef P1D_PACKABLE
 #define P1D_PACKABLE
 
-#include <ostream>
-#include <istream>
+#include <cstring>
 
 namespace poisson1d {
 
 class Packable
 {
     public:
-        virtual void pack(std::ostream& buffer) const = 0;
-        virtual void unpack(std::istream& buffer) = 0;
+        virtual Byte* pack(Byte* const buffer) const = 0;
+        virtual const Byte* unpack(const Byte* const buffer) = 0;
+        virtual size_t get_packed_size() const = 0;
+        virtual ~Packable() {}
+
+    protected:
+        template<typename T>
+        inline Byte* write_to_buffer(const T& var, Byte* const buffer) const
+        {
+            Byte* cursor = buffer;
+            const Byte * cast_value_ptr = reinterpret_cast<const Byte*>(&var);
+            size_t value_size = sizeof(T);
+            memcpy(cursor, cast_value_ptr, value_size);
+            cursor += value_size;
+            return cursor;
+        }
+
+        template<typename T>
+        inline const Byte* read_from_buffer(T& var, const Byte* const buffer) const
+        {
+            const Byte* cursor = buffer;
+            const T* cast_cursor_ptr = reinterpret_cast<const T*>(cursor);
+            var = *cast_cursor_ptr;
+            size_t value_size = sizeof(T);
+            cursor += value_size;
+            return cursor;
+        }
 };
+
+//inline std::ostream& operator<<(std::ostream& stream, const Packable& serializable)
+//{
+    //serializable.pack(stream);
+    //return stream;
+//}
+
+//inline std::istream& operator>>(std::istream& stream, Packable& serializable)
+//{
+    //serializable.unpack(stream);
+    //return stream;
+//}
 
 } //namespace poisson1d
 

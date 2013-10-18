@@ -55,8 +55,9 @@ class Mesh : public Packable {
         const_iterator begin() const;
         const_iterator end() const;
 
-        virtual void pack(std::ostream& buffer) const;
-        virtual void unpack(std::istream& buffer);
+        virtual Byte* pack(Byte* const buffer) const;
+        virtual const Byte* unpack(const Byte* const buffer);
+        virtual size_t get_packed_size() const;
 
     private:
         friend class MeshBaseIterator;

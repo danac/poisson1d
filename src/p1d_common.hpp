@@ -29,6 +29,7 @@
 namespace poisson1d {
 
 typedef double Real;
+typedef unsigned char Byte;
 
 } //namespace poisson1d
 

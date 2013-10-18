@@ -61,19 +61,40 @@ Mesh::const_iterator Mesh::end() const {
     return const_iterator(this, n);
 }
 
-void Mesh::pack(std::ostream& buffer) const
+Byte* Mesh::pack(Byte* const buffer) const
 {
-    buffer << a << b << n << static_cast<int>(position);
+    Byte* cursor = buffer;
+    cursor = write_to_buffer(a, cursor);
+    cursor = write_to_buffer(b, cursor);
+    cursor = write_to_buffer(n, cursor);
+    cursor = write_to_buffer(position, cursor);
+    return cursor;
 }
 
-void Mesh::unpack(std::istream& buffer)
+const Byte* Mesh::unpack(const Byte* const buffer)
 {
-    buffer >> a;
-    buffer >> b;
-    buffer >> n;
-    int position_int(0);
-    buffer >> position_int;
-    position = static_cast<MeshGlobalPosition>(position_int);
+    const Byte* cursor = buffer;
+    cursor = read_from_buffer(a, cursor);
+    cursor = read_from_buffer(b, cursor);
+    cursor = read_from_buffer(n, cursor);
+    cursor = read_from_buffer(position, cursor);
+    return cursor;
+    //buffer >> a;
+    //buffer >> b;
+    //buffer >> n;
+    //int position_int(0);
+    //buffer >> position_int;
+    //position = static_cast<MeshGlobalPosition>(position_int);
+}
+
+size_t Mesh::get_packed_size() const
+{
+    size_t size(0);
+    size += sizeof(a);
+    size += sizeof(b);
+    size += sizeof(n);
+    size += sizeof(static_cast<int>(position));
+    return size;
 }
 
 } //namespace poisson1d

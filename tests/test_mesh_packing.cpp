@@ -30,23 +30,26 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    stringstream stream;
+    Byte* buffer(NULL);
 
     Real a(0), b(0);
     size_t n(10);
     MeshGlobalPosition position(_full);
 
     Mesh mesh(a, b, n, position);
-    mesh.pack(stream);
+
+    size_t mesh_byte_size = mesh.get_packed_size();
+    buffer = new Byte[mesh_byte_size];
+    mesh.pack(buffer);
 
     Mesh unpacked_mesh;
 
-    unpacked_mesh.unpack(stream);
+    unpacked_mesh.unpack(buffer);
 
-    assert(mesh.get_lower_bound() == a);
-    assert(mesh.get_upper_bound() == b);
-    assert(mesh.get_num_nodes() == n);
-    assert(mesh.get_global_position() == position);
+    assert(unpacked_mesh.get_lower_bound() == a);
+    assert(unpacked_mesh.get_upper_bound() == b);
+    assert(unpacked_mesh.get_num_nodes() == n);
+    assert(unpacked_mesh.get_global_position() == position);
 
     return 0;
 }
