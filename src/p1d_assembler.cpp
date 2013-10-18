@@ -22,6 +22,7 @@
  */
 
 #include "p1d_assembler.hpp"
+#include "p1d_helper_functions.hpp"
 #include "muParser.h"
 #include <cassert>
 
@@ -41,24 +42,22 @@ DistributedAssembler::DistributedAssembler(const Mesh & mesh, const std::string 
     MeshGlobalPosition position = mesh_ptr->get_global_position();
     assert(position != _undefined);
 
+    nnz = utils::get_matrix_nnz(n, position);
+
     if(position == _full)
     {
-        nnz = 3*(n-2)+2; // n-2 rows with 3 coefs and 1 coef on both first and last rows
         rhs_size = n;
     }
     else if(position == _left)
     {
-        nnz = 3*(n-2)+1; // n-2 rows with 3 coefs because the last node is a ghost
         rhs_size = n-1;
     }
     else if(position == _right)
     {
-        nnz = 3*(n-2)+1; // n-2 rows with 3 coefs because the last node is a ghost
         rhs_size = n-1;
     }
     else
     {
-        nnz = 3*(n-2); // n-2 rows with 3 coefs beacuse both ends are ghosts
         rhs_size = n-2;
     }
 }

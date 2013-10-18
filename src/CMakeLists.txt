@@ -12,7 +12,8 @@ set(POISSON_1D_SRC
         p1d_mesh_iterator.cpp
         p1d_merger.cpp
         p1d_partitioner.cpp
-        #p1d_structs.cpp
+        p1d_structs.cpp
+        p1d_helper_functions.cpp
 )
 
 option(BUILD_POISSON1D_SHARED "Build the poisson1d library shared." OFF)

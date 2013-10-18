@@ -1,5 +1,5 @@
 /*
- * p1d_merger.hpp
+ * p1d_helper_functions.hpp
  *
  * Copyright 2013 Dana Christen <dana.christen@gmail.com>
  *
@@ -21,36 +21,22 @@
  *
  */
 
-#ifndef P1D_MERGER
-#define P1D_MERGER
+#ifndef P1D_HELPER_FUNCTIONS
+#define P1D_HELPER_FUNCTIONS
 
 #include "p1d_common.hpp"
+#include "p1d_mesh.hpp"
 
 namespace poisson1d {
 
-class Merger
-{
-    public:
-        Merger(size_t n, size_t num_jobs);
-        ~Merger();
+namespace utils {
 
-        void merge_matrix(const Real* matrix_ptr, size_t job_id);
-        void merge_rhs(const Real* matrix_ptr, size_t job_id);
+size_t get_job_nnz(size_t job_id, size_t n, size_t num_jobs);
+size_t get_job_rows(size_t job_id, size_t n, size_t num_jobs);
+size_t get_full_matrix_nnz(size_t n);
+size_t get_matrix_nnz(size_t n, MeshGlobalPosition position = _full);
 
-        const Real* get_matrix_ptr() const;
-        const Real* get_rhs_ptr() const;
-
-    private:
-        size_t get_job_nnz_offset(size_t job_id) const;
-        size_t get_job_rows_offset(size_t job_id) const;
-
-        Real* full_matrix_ptr;
-        Real* full_rhs_ptr;
-
-        size_t n;
-        size_t num_jobs;
-};
+} //namespace utils
 
 } //namespace poisson1d
-
 #endif
