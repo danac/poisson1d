@@ -28,7 +28,7 @@
 namespace poisson1d {
 
 template<>
-inline Byte* Packable::write_to_buffer(const std::string& var, Byte* const buffer) const
+inline Byte* Packable::write_to_buffer(const std::string& var, Byte* buffer) const
 {
     Byte* cursor = buffer;
     const Byte * cast_value_ptr = var.c_str();
@@ -39,7 +39,7 @@ inline Byte* Packable::write_to_buffer(const std::string& var, Byte* const buffe
 }
 
 template<>
-inline const Byte* Packable::read_from_buffer(std::string& var, const Byte* const buffer) const
+inline const Byte* Packable::read_from_buffer(std::string& var, const Byte* buffer) const
 {
     const Byte* cursor = buffer;
     var = std::string(cursor);

@@ -33,13 +33,13 @@ class Packable
 {
     public:
         virtual ~Packable() {}
-        virtual Byte* pack(Byte* const buffer) const = 0;
-        virtual const Byte* unpack(const Byte* const buffer) = 0;
+        virtual Byte* pack(Byte* buffer) const = 0;
+        virtual const Byte* unpack(const Byte* buffer) = 0;
         virtual size_t get_packed_size() const = 0;
 
     protected:
         template<typename T>
-        inline Byte* write_to_buffer(const T& var, Byte* const buffer) const
+        inline Byte* write_to_buffer(const T& var, Byte* buffer) const
         {
             Byte* cursor = buffer;
             T * cast_cursor = reinterpret_cast<T*>(cursor);
@@ -49,7 +49,7 @@ class Packable
         }
 
         template<typename T>
-        inline const Byte* read_from_buffer(T& var, const Byte* const buffer) const
+        inline const Byte* read_from_buffer(T& var, const Byte* buffer) const
         {
             const Byte* cursor = buffer;
             const T* cast_cursor = reinterpret_cast<const T*>(cursor);

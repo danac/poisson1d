@@ -61,7 +61,7 @@ Mesh::const_iterator Mesh::end() const {
     return const_iterator(this, n);
 }
 
-Byte* Mesh::pack(Byte* const buffer) const
+Byte* Mesh::pack(Byte* buffer) const
 {
     Byte* cursor = buffer;
     cursor = write_to_buffer(a, cursor);
@@ -71,7 +71,7 @@ Byte* Mesh::pack(Byte* const buffer) const
     return cursor;
 }
 
-const Byte* Mesh::unpack(const Byte* const buffer)
+const Byte* Mesh::unpack(const Byte* buffer)
 {
     const Byte* cursor = buffer;
     cursor = read_from_buffer(a, cursor);
