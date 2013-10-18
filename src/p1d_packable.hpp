@@ -60,18 +60,6 @@ class Packable
 
 };
 
-//inline std::ostream& operator<<(std::ostream& stream, const Packable& serializable)
-//{
-    //serializable.pack(stream);
-    //return stream;
-//}
-
-//inline std::istream& operator>>(std::istream& stream, Packable& serializable)
-//{
-    //serializable.unpack(stream);
-    //return stream;
-//}
-
 } //namespace poisson1d
 
 #include "p1d_packable.tmpl.hpp"
