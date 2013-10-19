@@ -43,6 +43,8 @@ if(BUILD_POISSON1D_TESTS)
 
     add_cpp_test(test_solution)
 
+    add_cpp_test(test_job)
+
     add_cpp_test(test_job_result)
 
 
