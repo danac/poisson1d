@@ -74,7 +74,7 @@ void test_matrix_5_mesh(MeshGlobalPosition position)
     Job job(problem, rank);
     DistributedAssembler assembler(job);
 
-    JobResult* job_result = assembler.get_job_result_alloc(rank);
+    JobResult* job_result = assembler.get_job_result_alloc();
     cout << "Testing matrix..." << endl;
     Real* matrix_ptr = job_result->get_matrix_ptr();
 

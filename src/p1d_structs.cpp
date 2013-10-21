@@ -175,6 +175,12 @@ const Problem& Job::get_problem() const
     return *problem_ptr;
 }
 
+
+size_t Job::get_rank() const
+{
+    return rank;
+}
+
 /*
  *  JobResult
  */

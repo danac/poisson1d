@@ -211,8 +211,9 @@ size_t DistributedAssembler::get_rhs_size() const
     return rhs_size;
 }
 
-JobResult* DistributedAssembler::get_job_result_alloc(size_t rank)
+JobResult* DistributedAssembler::get_job_result_alloc()
 {
+    size_t rank = job_ptr->get_rank();
     Real* result_rhs_ptr = assemble_rhs_alloc();
     Real* result_matrix_ptr = assemble_matrix_alloc();
     return new JobResult(result_matrix_ptr, result_rhs_ptr, rank, nnz, n, true);

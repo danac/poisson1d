@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     Job job(problem, rank);
     DistributedAssembler assembler(job);
 
-    JobResult* job_result = assembler.get_job_result_alloc(rank);
+    JobResult* job_result = assembler.get_job_result_alloc();
 
     size_t job_result_size = job_result->get_packed_size();
     Byte* buffer = new Byte[job_result_size];

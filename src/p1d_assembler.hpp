@@ -37,7 +37,7 @@ class DistributedAssembler
         DistributedAssembler(const Job& job);
         ~DistributedAssembler();
 
-        JobResult* get_job_result_alloc(size_t rank);
+        JobResult* get_job_result_alloc();
 
     private:
         void assemble_rhs(Real* rhs_ptr) const;

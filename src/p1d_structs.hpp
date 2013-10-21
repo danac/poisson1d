@@ -72,6 +72,8 @@ class Job : public Packable {
         bool operator==(const Job& other) const;
 
         const Problem& get_problem() const;
+        size_t get_rank() const;
+
     private:
         Problem* problem_ptr;
         size_t rank;

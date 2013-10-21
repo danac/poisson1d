@@ -77,7 +77,7 @@ void test_rhs_5_mesh(MeshGlobalPosition position)
         rhs_size = n-2;
     }
 
-    JobResult* job_result = assembler.get_job_result_alloc(rank);
+    JobResult* job_result = assembler.get_job_result_alloc();
     Real* rhs_ptr =  job_result->get_rhs_ptr();
 
     cout << "Testing rhs..." << endl;
