@@ -1,5 +1,5 @@
 /*
- * p1d_helper_functions.hpp
+ * p1d_distributor.hpp
  *
  * Copyright 2013 Dana Christen <dana.christen@gmail.com>
  *
@@ -21,23 +21,35 @@
  *
  */
 
-#ifndef P1D_HELPER_FUNCTIONS
-#define P1D_HELPER_FUNCTIONS
+#ifndef P1D_DISTRIBUTOR
+#define P1D_DISTRIBUTOR
 
 #include "p1d_common.hpp"
-#include "p1d_mesh.hpp"
+#include "p1d_structs.hpp"
+#include <zmq.hpp>
+#include <string>
 
 namespace poisson1d {
 
-namespace utils {
+class Distributor
+{
+    public:
+        Distributor(const Problem& problem, size_t port, const std::string& bind_host= "*");
 
-size_t get_job_nnz(size_t job_id, size_t n, size_t num_jobs);
-size_t get_job_rows(size_t job_id, size_t n, size_t num_jobs);
-size_t get_full_matrix_nnz(size_t n);
-size_t get_matrix_nnz(size_t n, MeshGlobalPosition position = _full);
-void dealloc_hook (void* data, void* hint);
+        void distribute();
 
-} //namespace utils
+    private:
+
+        const Problem* problem_ptr;
+
+        zmq::context_t context;
+        zmq::socket_t socket;
+        size_t port;
+        std::string bind_address;
+
+
+};
 
 } //namespace poisson1d
+
 #endif

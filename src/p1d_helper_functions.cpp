@@ -86,6 +86,10 @@ size_t get_matrix_nnz(size_t n, MeshGlobalPosition position)
     return nnz;
 }
 
+void dealloc_hook (void* data, void* hint)
+{
+    delete[] static_cast<Real*>(data);
+}
 
 } //namespace utils
 } //namespace poisson1d
