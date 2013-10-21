@@ -24,25 +24,33 @@
 #include "p1d_partitioner.hpp"
 #include <cassert>
 #include <iostream>
+#include <string>
 
 namespace poisson1d {
 
-Partitioner::Partitioner(const Mesh& mesh, size_t num_jobs_)
-: full_mesh_ptr(&mesh), num_jobs(num_jobs_)
+Partitioner::Partitioner(const Problem& problem)
+: problem_ptr(&problem)
 {}
 
 Partitioner::~Partitioner()
 {}
 
-Mesh* Partitioner::get_partitioned_mesh_alloc(size_t rank) const
+Job* Partitioner::get_job_alloc(size_t rank) const
 {
+
+    const Mesh& full_mesh = problem_ptr->get_mesh();
+    size_t num_jobs = problem_ptr->get_num_jobs();
+
+    size_t n = full_mesh.get_num_nodes();
+    Real a = full_mesh.get_lower_bound();
+    Real b = full_mesh.get_upper_bound();
+    Real fa = problem_ptr->get_fa();
+    Real fb = problem_ptr->get_fb();
+    std::string rhs_func = problem_ptr->get_rhs_func();
+
     assert(rank < num_jobs);
 
-    size_t n = full_mesh_ptr->get_num_nodes();
-    Real a = full_mesh_ptr->get_lower_bound();
-    Real b = full_mesh_ptr->get_upper_bound();
-
-    Mesh::const_iterator mesh_it = full_mesh_ptr->begin();
+    Mesh::const_iterator mesh_it = full_mesh.begin();
 
     Real a2(0);
     Real b2(0);
@@ -96,7 +104,11 @@ Mesh* Partitioner::get_partitioned_mesh_alloc(size_t rank) const
 
     //std::cout << "-OFFSET " << offset << "-";
     //std::cout << "-n2 " << n2 << "-";
-    return new Mesh(a2, b2, n2, position);
+    Mesh* new_mesh = new Mesh(a2, b2, n2, position);
+    Problem* new_problem = new Problem(*new_mesh, fa, fb, rhs_func, num_jobs, true);
+    Job* new_job = new Job(*new_problem, rank, true);
+
+    return new_job;
 }
 
 

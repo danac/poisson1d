@@ -33,7 +33,7 @@ namespace poisson1d {
 class Problem : public Packable {
 
     public:
-        Problem(Mesh& mesh, Real fa, Real fb, std::string rhs_func, size_t num_jobs);
+        Problem(Mesh& mesh, Real fa, Real fb, std::string rhs_func, size_t num_jobs, bool ownership = false);
         Problem();
         ~Problem();
 
@@ -42,6 +42,12 @@ class Problem : public Packable {
         virtual size_t get_packed_size() const;
 
         bool operator==(const Problem& other) const;
+
+        const Mesh& get_mesh() const;
+        Real get_fa() const;
+        Real get_fb() const;
+        std::string get_rhs_func() const;
+        size_t get_num_jobs() const;
 
     private:
         Mesh* mesh_ptr;
@@ -55,7 +61,7 @@ class Problem : public Packable {
 class Job : public Packable {
 
     public:
-        Job(Problem& problem, size_t rank);
+        Job(Problem& problem, size_t rank, bool ownership = false);
         Job();
         ~Job();
 
@@ -65,6 +71,7 @@ class Job : public Packable {
 
         bool operator==(const Job& other) const;
 
+        const Problem& get_problem() const;
     private:
         Problem* problem_ptr;
         size_t rank;
@@ -74,7 +81,7 @@ class Job : public Packable {
 class JobResult : Packable {
 
     public:
-        JobResult(Real* matrix_ptr_, Real* rhs_ptr_, size_t rank, size_t nnz, size_t n);
+        JobResult(Real* matrix_ptr_, Real* rhs_ptr_, size_t rank, size_t nnz, size_t n, bool ownership = false);
         JobResult();
         ~JobResult();
 
@@ -96,7 +103,7 @@ class JobResult : Packable {
 class Solution : public Packable {
 
     public:
-        Solution(Real* solution_ptr, size_t n);
+        Solution(Real* solution_ptr, size_t n, bool ownership = false);
         Solution();
         ~Solution();
 

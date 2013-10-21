@@ -25,6 +25,7 @@
 #define P1D_PARTITIONER
 
 #include "p1d_common.hpp"
+#include "p1d_structs.hpp"
 #include "p1d_mesh.hpp"
 
 namespace poisson1d {
@@ -32,14 +33,13 @@ namespace poisson1d {
 class Partitioner
 {
     public:
-        Partitioner(const Mesh& mesh, size_t num_jobs);
+        Partitioner(const Problem& problem);
         ~Partitioner();
 
-        Mesh* get_partitioned_mesh_alloc(size_t rank) const;
+        Job* get_job_alloc(size_t rank) const;
 
     private:
-        const Mesh* full_mesh_ptr;
-        size_t num_jobs;
+        const Problem* problem_ptr;
 };
 
 } //namespace poisson1d

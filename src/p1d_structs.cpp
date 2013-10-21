@@ -30,8 +30,8 @@ namespace poisson1d {
  *  Problem
  */
 
-Problem::Problem(Mesh& mesh, Real fa_, Real fb_, std::string rhs_func_, size_t num_jobs_)
-: mesh_ptr(&mesh), fa(fa_), fb(fb_), rhs_func(rhs_func_), num_jobs(num_jobs_), data_ownership(false)
+Problem::Problem(Mesh& mesh, Real fa_, Real fb_, std::string rhs_func_, size_t num_jobs_, bool ownership)
+: mesh_ptr(&mesh), fa(fa_), fb(fb_), rhs_func(rhs_func_), num_jobs(num_jobs_), data_ownership(ownership)
 {}
 
 Problem::Problem()
@@ -92,12 +92,36 @@ bool Problem::operator==(const Problem& other) const
     return identical;
 }
 
+const Mesh& Problem::get_mesh() const
+{
+    return *mesh_ptr;
+}
+
+Real Problem::get_fa() const
+{
+    return fa;
+}
+
+Real Problem::get_fb() const
+{
+    return fb;
+}
+
+std::string Problem::get_rhs_func() const
+{
+    return rhs_func;
+}
+size_t Problem::get_num_jobs() const
+{
+    return num_jobs;
+}
+
 /*
  *  Job
  */
 
-Job::Job(Problem& problem, size_t rank_)
-: problem_ptr(&problem), rank(rank_), data_ownership(false)
+Job::Job(Problem& problem, size_t rank_, bool ownership)
+: problem_ptr(&problem), rank(rank_), data_ownership(ownership)
 {}
 
 Job::Job()
@@ -146,13 +170,17 @@ bool Job::operator==(const Job& other) const
     return identical;
 }
 
+const Problem& Job::get_problem() const
+{
+    return *problem_ptr;
+}
 
 /*
  *  JobResult
  */
 
-JobResult::JobResult(Real* matrix_ptr_, Real* rhs_ptr_, size_t rank_, size_t nnz_, size_t n_)
-: rhs_ptr(rhs_ptr_), matrix_ptr(matrix_ptr_), nnz(nnz_), n(n_), rank(rank_), data_ownership(false)
+JobResult::JobResult(Real* matrix_ptr_, Real* rhs_ptr_, size_t rank_, size_t nnz_, size_t n_, bool ownership)
+: rhs_ptr(rhs_ptr_), matrix_ptr(matrix_ptr_), nnz(nnz_), n(n_), rank(rank_), data_ownership(ownership)
 {}
 
 JobResult::JobResult()
@@ -242,8 +270,8 @@ bool JobResult::operator==(const JobResult& other) const
 }
 
 
-Solution::Solution(Real* x_ptr_, size_t n_)
-: x_ptr(x_ptr_), n(n_), data_ownership(false)
+Solution::Solution(Real* x_ptr_, size_t n_, bool ownership)
+: x_ptr(x_ptr_), n(n_), data_ownership(ownership)
 {}
 
 Solution::Solution()

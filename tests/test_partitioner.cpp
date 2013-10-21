@@ -36,8 +36,10 @@ int main(int argc, char* argv[])
     printf("Admitted epsilon: %.2e\n", epsilon);
 
     Real a(0), b(0.8);
+    Real fa(13.13), fb(14.14);
     size_t n(11);
     Real dx = (b-a) / (n-1);
+    std::string rhs_func("x");
     size_t num_jobs(3);
     size_t num_rows[num_jobs];
 
@@ -53,12 +55,15 @@ int main(int argc, char* argv[])
     MeshGlobalPosition position(_full);
 
     Mesh full_mesh(a, b, n, position);
-    Partitioner partitioner(full_mesh, num_jobs);
-    Mesh* partial_meshes_ptr[num_jobs];
+    Problem problem(full_mesh, fa, fb, rhs_func, num_jobs);
+    Partitioner partitioner(problem);
+    const Job* jobs[num_jobs];
+    const Mesh* partial_meshes_ptr[num_jobs];
 
     for(size_t i(0); i < num_jobs; ++i)
     {
-        partial_meshes_ptr[i] = partitioner.get_partitioned_mesh_alloc(i);
+        jobs[i] = partitioner.get_job_alloc(i);
+        partial_meshes_ptr[i] = &jobs[i]->get_problem().get_mesh();
     }
 
     assert(partial_meshes_ptr[0]->get_num_nodes() == num_rows[0]+1);
@@ -75,7 +80,7 @@ int main(int argc, char* argv[])
 
     for(size_t i(0); i < num_jobs; ++i)
     {
-        delete partial_meshes_ptr[i];
+        delete jobs[i];
     }
     return 0;
 }
