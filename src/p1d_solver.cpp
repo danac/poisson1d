@@ -86,4 +86,11 @@ void Solver::solve(Real* x_ptr)
     }
 }
 
+Solution* Solver::get_solution_alloc()
+{
+    Real* x_ptr = new Real[n];
+    solve(x_ptr);
+    return new Solution(x_ptr, n, true);
+}
+
 } //namespace poisson1d

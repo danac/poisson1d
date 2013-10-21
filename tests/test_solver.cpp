@@ -69,17 +69,18 @@ int main(int argc, char* argv[])
     Real fa(10), fb(2);
     Real ref_value[3] = {10., 25./4, 2.};
     Real epsilon = std::numeric_limits<Real>::epsilon();
-
-    // n-by-n 1D poisson matrix has n-2 non-zeros
-    Real* matrix_ptr = new Real[3*n-2];
-    Real* rhs_ptr = new Real[n];
-    Real* x_ptr = new Real[n];
+    std::string rhs_func("1");
+    size_t num_jobs(1);
+    size_t rank(0);
 
     Mesh mesh(a, b, n, _full);
-    DistributedAssembler assembler(mesh, "1", fa, fb);
+    Problem problem(mesh, fa, fb, rhs_func, num_jobs);
+    Job job(problem, rank);
+    DistributedAssembler assembler(job);
 
-    assembler.assemble_rhs(rhs_ptr);
-    assembler.assemble_matrix(matrix_ptr);
+    JobResult* job_result = assembler.get_job_result_alloc(rank);
+    Real* matrix_ptr = job_result->get_matrix_ptr();
+    Real* rhs_ptr = job_result->get_rhs_ptr();
 
     cout << "Matrix: " << endl;
     dump_matrix_ptr(matrix_ptr, n);
@@ -88,8 +89,8 @@ int main(int argc, char* argv[])
     dump_vector_ptr(rhs_ptr, n);
 
     Solver solver(matrix_ptr, rhs_ptr, n);
-    solver.solve(x_ptr);
-
+    Solution* solution = solver.get_solution_alloc();
+    const Real* x_ptr = solution->get_x_ptr();
     cout << "Solution vector: " << endl;
     for(size_t i(0); i<n; ++i)
     {
@@ -99,9 +100,8 @@ int main(int argc, char* argv[])
     }
     cout << endl;
 
-    delete[] matrix_ptr;
-    delete[] rhs_ptr;
-    delete[] x_ptr;
+    delete solution;
+    delete job_result;
 
     return 0;
 }

@@ -91,6 +91,13 @@ class JobResult : Packable {
 
         bool operator==(const JobResult& other) const;
 
+        Real* get_rhs_ptr() const;
+        Real* get_matrix_ptr() const;
+        size_t get_rank() const;
+        size_t get_n() const;
+        size_t get_nnz() const;
+
+
     private:
         Real* rhs_ptr;
         Real* matrix_ptr;
@@ -112,6 +119,8 @@ class Solution : public Packable {
         virtual size_t get_packed_size() const;
 
         bool operator==(const Solution& other) const;
+
+        const Real* get_x_ptr() const;
 
     private:
         Real* x_ptr;

@@ -28,17 +28,26 @@
 
 namespace poisson1d {
 
-DistributedAssembler::DistributedAssembler(const Mesh & mesh, const std::string & rhs, Real fa_, Real fb_)
-: mesh_ptr(&mesh),
-  rhs_func(rhs),
-  a(mesh.get_lower_bound()),
-  b(mesh.get_upper_bound()),
-  fa(fa_),
-  fb(fb_),
-  n(mesh.get_num_nodes()),
+DistributedAssembler::DistributedAssembler(const Job & job)
+: job_ptr(&job),
+  mesh_ptr(NULL),
+  rhs_func(""),
+  a(0.0),
+  b(0.0),
+  fa(0.0),
+  fb(0.0),
+  n(0),
   nnz(0),
   rhs_size(0)
 {
+    const Problem* problem_ptr = &job_ptr->get_problem();
+    mesh_ptr = &problem_ptr->get_mesh();
+    a = mesh_ptr->get_a();
+    b = mesh_ptr->get_b();
+    n = mesh_ptr->get_n();
+    fa = problem_ptr->get_fa();
+    fb = problem_ptr->get_fb();
+    rhs_func = problem_ptr->get_rhs_func();
     MeshGlobalPosition position = mesh_ptr->get_global_position();
     assert(position != _undefined);
 
@@ -200,6 +209,13 @@ size_t DistributedAssembler::get_matrix_nnz() const
 size_t DistributedAssembler::get_rhs_size() const
 {
     return rhs_size;
+}
+
+JobResult* DistributedAssembler::get_job_result_alloc(size_t rank)
+{
+    Real* result_rhs_ptr = assemble_rhs_alloc();
+    Real* result_matrix_ptr = assemble_matrix_alloc();
+    return new JobResult(result_matrix_ptr, result_rhs_ptr, rank, nnz, n, true);
 }
 
 } //namespace poisson1d

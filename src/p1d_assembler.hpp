@@ -27,15 +27,19 @@
 #include <string>
 #include "p1d_common.hpp"
 #include "p1d_mesh.hpp"
+#include "p1d_structs.hpp"
 
 namespace poisson1d {
 
 class DistributedAssembler
 {
     public:
-        DistributedAssembler(const Mesh & mesh, const std::string & rhs, Real fa, Real fb);
+        DistributedAssembler(const Job& job);
         ~DistributedAssembler();
 
+        JobResult* get_job_result_alloc(size_t rank);
+
+    private:
         void assemble_rhs(Real* rhs_ptr) const;
         Real* assemble_rhs_alloc() const;
 
@@ -45,7 +49,7 @@ class DistributedAssembler
         size_t get_matrix_nnz() const;
         size_t get_rhs_size() const;
 
-    private:
+        const Job* job_ptr;
         const Mesh* mesh_ptr;
         std::string rhs_func;
         Real a;

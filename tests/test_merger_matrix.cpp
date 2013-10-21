@@ -94,7 +94,6 @@ void test_5_way_partitioning(size_t n)
         offset = ( (j == 0) ? 0 : offset+num_nnz[j-1] );
         for(size_t i(offset); i < offset + num_nnz[j]; ++i)
         {
-            //std::cout << "job=" << j << " i=" << i << " val=" << full_array[i] << endl;
             assert(full_array[i] == Real(j)+1);
         }
     }

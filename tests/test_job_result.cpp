@@ -40,32 +40,32 @@ int main(int argc, char* argv[])
     Real fb(-0.1);
     size_t n(500);
     string rhs_func("x*x-2");
+    size_t num_jobs(1);
+    size_t rank(0);
 
     MeshGlobalPosition position = _full;
 
     Mesh mesh(a, b, n, position);
 
-    DistributedAssembler assembler(mesh, rhs_func, fa, fb);
-    Real * matrix_ptr = assembler.assemble_matrix_alloc();
-    Real * rhs_ptr = assembler.assemble_rhs_alloc();
+    Problem problem(mesh, fa, fb, rhs_func, num_jobs);
+    Job job(problem, rank);
+    DistributedAssembler assembler(job);
 
-    JobResult job_result(matrix_ptr, rhs_ptr, 0, assembler.get_matrix_nnz(), assembler.get_rhs_size());
+    JobResult* job_result = assembler.get_job_result_alloc(rank);
 
-    size_t job_result_size = job_result.get_packed_size();
+    size_t job_result_size = job_result->get_packed_size();
     Byte* buffer = new Byte[job_result_size];
     Byte* test_ptr(NULL);
 
-    test_ptr = job_result.pack(buffer);
+    test_ptr = job_result->pack(buffer);
     assert(test_ptr == buffer + job_result_size);
 
     JobResult new_job_result;
     new_job_result.unpack(buffer);
 
-    assert(new_job_result == job_result);
+    assert(new_job_result == *job_result);
 
     delete[] buffer;
-    delete[] rhs_ptr;
-    delete[] matrix_ptr;
-
+    delete job_result;
     return 0;
 }

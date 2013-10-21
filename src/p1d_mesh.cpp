@@ -107,4 +107,23 @@ bool Mesh::operator==(const Mesh& other) const
     return identical;
 }
 
+Real Mesh::get_a() const
+{
+    return a;
+}
+Real Mesh::get_b() const
+{
+    return b;
+}
+
+Real Mesh::get_n() const
+{
+    return n;
+}
+
+MeshGlobalPosition Mesh::get_position() const
+{
+    return position;
+}
+
 } //namespace poisson1d

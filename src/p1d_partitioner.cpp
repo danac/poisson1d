@@ -106,9 +106,7 @@ Job* Partitioner::get_job_alloc(size_t rank) const
     //std::cout << "-n2 " << n2 << "-";
     Mesh* new_mesh = new Mesh(a2, b2, n2, position);
     Problem* new_problem = new Problem(*new_mesh, fa, fb, rhs_func, num_jobs, true);
-    Job* new_job = new Job(*new_problem, rank, true);
-
-    return new_job;
+    return new Job(*new_problem, rank, true);
 }
 
 

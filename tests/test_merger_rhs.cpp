@@ -86,11 +86,6 @@ void test_5_way_partitioning(size_t n)
     merger.merge_rhs(array5, 4);
 
     const Real* full_array = merger.get_rhs_ptr();
-    //for(size_t i(0); i < n; ++i)
-    //{
-        //std::cout << "i=" << i << " val=" << full_array[i] << endl;
-    //}
-    //_array(full_array, n);
     for(size_t i(0); i < num_jobs; ++i)
     {
         for(size_t j(offset[i]); j < offset[i]+num_rows[i]; ++j)

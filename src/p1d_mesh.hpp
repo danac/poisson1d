@@ -61,6 +61,11 @@ class Mesh : public Packable {
 
         bool operator==(const Mesh& other) const;
 
+        Real get_a() const;
+        Real get_b() const;
+        Real get_n() const;
+        MeshGlobalPosition get_position() const;
+
     private:
         friend class MeshBaseIterator;
         Real a;

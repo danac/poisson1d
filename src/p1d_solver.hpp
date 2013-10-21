@@ -25,6 +25,7 @@
 #define P1D_SOLVER
 
 #include "p1d_common.hpp"
+#include "p1d_structs.hpp"
 #include <Eigen/SparseCore>
 
 namespace poisson1d {
@@ -35,7 +36,7 @@ class Solver
         Solver(const Real* A, const Real* b, size_t n);
         ~Solver();
 
-        void solve(Real* x_ptr);
+        Solution* get_solution_alloc();
 
     private:
         typedef Eigen::SparseMatrix<Real, Eigen::RowMajor> SparseMat;
@@ -43,6 +44,8 @@ class Solver
 
         void load_matrix_array(const Real* matrix_ptr);
         void load_rhs_array(const Real* rhs_ptr);
+
+        void solve(Real* x_ptr);
 
         SparseMat A;
         Vec b;

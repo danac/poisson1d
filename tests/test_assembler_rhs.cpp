@@ -38,15 +38,19 @@ void test_rhs_5_mesh(MeshGlobalPosition position)
     Real fa(10);
     Real fb(2);
     size_t n(5);
-    string rhs_func("x");
+    size_t num_jobs(1);
+    size_t rank(0);
+    std::string rhs_func("x");
     Real dx = (b-a)/(n-1);
 
     Real epsilon = std::numeric_limits<Real>::epsilon() * 100;
     printf("Admitted epsilon: %.2e\n", epsilon);
 
     Mesh mesh(a, b, n, position);
+    Problem problem(mesh, fa, fb, rhs_func, num_jobs);
+    Job job(problem, rank);
 
-    DistributedAssembler assembler(mesh, rhs_func, fa, fb);
+    DistributedAssembler assembler(job);
 
     size_t rhs_size(0);
     size_t rhs_loop_start(0);
@@ -73,11 +77,10 @@ void test_rhs_5_mesh(MeshGlobalPosition position)
         rhs_size = n-2;
     }
 
-    Real* rhs_ptr = new Real[rhs_size];
+    JobResult* job_result = assembler.get_job_result_alloc(rank);
+    Real* rhs_ptr =  job_result->get_rhs_ptr();
 
     cout << "Testing rhs..." << endl;
-
-    assembler.assemble_rhs(rhs_ptr);
 
     if(position == _full || position == _left)
     {
@@ -104,8 +107,8 @@ void test_rhs_5_mesh(MeshGlobalPosition position)
         printf(" rhs_ptr[%lu]=%.2f expected %.2f diff %.2e \n", index, rhs_ptr[index], expected_value, diff);
         assert(diff <= epsilon);
     }
-    delete[] rhs_ptr;
 
+    delete job_result;
 
 }
 

@@ -270,6 +270,36 @@ bool JobResult::operator==(const JobResult& other) const
 }
 
 
+Real* JobResult::get_rhs_ptr() const
+{
+    return rhs_ptr;
+}
+
+Real* JobResult::get_matrix_ptr() const
+{
+    return matrix_ptr;
+}
+
+size_t JobResult::get_rank() const
+{
+    return rank;
+}
+
+size_t JobResult::get_n() const
+{
+    return n;
+}
+
+size_t JobResult::get_nnz() const
+{
+    return nnz;
+}
+
+
+/*
+ *  Solution
+ */
+
 Solution::Solution(Real* x_ptr_, size_t n_, bool ownership)
 : x_ptr(x_ptr_), n(n_), data_ownership(ownership)
 {}
@@ -327,6 +357,11 @@ bool Solution::operator==(const Solution& other) const
         identical = (x_ptr[i] == other.x_ptr[i]);
     }
     return identical;
+}
+
+const Real* Solution::get_x_ptr() const
+{
+    return x_ptr;
 }
 
 } //namespace poisson1d

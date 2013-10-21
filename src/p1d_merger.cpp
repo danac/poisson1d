@@ -113,4 +113,12 @@ size_t Merger::get_job_nnz_offset(size_t job_id) const
     return offset;
 }
 
+
+void Merger::merge_job_result(const JobResult& job_result)
+{
+    size_t rank = job_result.get_rank();
+    merge_matrix(job_result.get_matrix_ptr(), rank);
+    merge_rhs(job_result.get_rhs_ptr(), rank);
+}
+
 } //namespace poisson1d

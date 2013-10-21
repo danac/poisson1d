@@ -25,6 +25,7 @@
 #define P1D_MERGER
 
 #include "p1d_common.hpp"
+#include "p1d_structs.hpp"
 
 namespace poisson1d {
 
@@ -34,11 +35,12 @@ class Merger
         Merger(size_t n, size_t num_jobs);
         ~Merger();
 
-        void merge_matrix(const Real* matrix_ptr, size_t job_id);
-        void merge_rhs(const Real* matrix_ptr, size_t job_id);
-
+        void merge_job_result(const JobResult& job_result);
         const Real* get_matrix_ptr() const;
         const Real* get_rhs_ptr() const;
+
+        void merge_matrix(const Real* matrix_ptr, size_t job_id);
+        void merge_rhs(const Real* matrix_ptr, size_t job_id);
 
     private:
         size_t get_job_nnz_offset(size_t job_id) const;

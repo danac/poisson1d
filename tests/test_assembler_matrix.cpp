@@ -39,6 +39,8 @@ void test_matrix_5_mesh(MeshGlobalPosition position)
     Real fb(2);
     size_t n(5);
     string rhs_func("x");
+    size_t num_jobs(1);
+    size_t rank(0);
     Real dx = (b-a)/(n-1);
     size_t matrix_loop_end(0);
     size_t m(0);
@@ -68,13 +70,13 @@ void test_matrix_5_mesh(MeshGlobalPosition position)
     }
 
     Mesh mesh(a, b, n, position);
+    Problem problem(mesh, fa, fb, rhs_func, num_jobs);
+    Job job(problem, rank);
+    DistributedAssembler assembler(job);
 
-    DistributedAssembler assembler(mesh, rhs_func, fa, fb);
-
-    Real* matrix_ptr = new Real[m];
-
+    JobResult* job_result = assembler.get_job_result_alloc(rank);
     cout << "Testing matrix..." << endl;
-    assembler.assemble_matrix(matrix_ptr);
+    Real* matrix_ptr = job_result->get_matrix_ptr();
 
     Real expected_coef1 = -1./dx;
     Real expected_coef2 = 2./dx;
@@ -113,7 +115,7 @@ void test_matrix_5_mesh(MeshGlobalPosition position)
         assert(diff <= epsilon);
     }
 
-    delete[] matrix_ptr;
+    delete job_result;
 }
 
 int main(int argc, char* argv[])
