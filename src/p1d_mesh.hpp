@@ -43,7 +43,7 @@ class MeshBaseIterator;
 class Mesh : public Packable {
 
     public:
-        Mesh(Real a, Real b, Real n, MeshGlobalPosition position);
+        Mesh(Real a, Real b, size_t n, MeshGlobalPosition position);
         Mesh();
 
         typedef MeshConstIterator const_iterator;

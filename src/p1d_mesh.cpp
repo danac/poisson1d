@@ -25,7 +25,7 @@
 
 namespace poisson1d {
 
-Mesh::Mesh(Real a_, Real b_, Real n_, MeshGlobalPosition position_)
+Mesh::Mesh(Real a_, Real b_, size_t n_, MeshGlobalPosition position_)
 : a(a_), b(b_), n(n_), position(position_)
 {}
 
