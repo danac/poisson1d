@@ -21,6 +21,13 @@ if(BUILD_POISSON1D_TESTS)
     target_link_libraries(${name} poisson1d)
     endmacro()
 
+    macro(add_py_test name)
+    add_executable(${name} ${name}.cpp)
+    target_link_libraries(${name} poisson1d)
+    file(COPY ${name}.py DESTINATION .)
+    add_test(NAME ${name} COMMAND ${name}.py)
+    endmacro()
+
     add_cpp_test(test_muparser)
 
     add_cpp_test(test_mesh)
@@ -47,5 +54,6 @@ if(BUILD_POISSON1D_TESTS)
 
     add_cpp_test(test_job_result)
 
+    add_py_test(test_python_binding)
 
 endif(BUILD_POISSON1D_TESTS)
