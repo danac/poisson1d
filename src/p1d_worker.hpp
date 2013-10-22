@@ -35,18 +35,17 @@ class Worker
     public:
         Worker(size_t input_port,
                size_t output_port,
+               size_t control_port,
                const std::string& input_host = "localhost",
-               const std::string& output_host = "localhost");
+               const std::string& output_host = "localhost",
+               const std::string& control_host = "localhost");
         void work();
 
     private:
-
         zmq::context_t context;
         zmq::socket_t input_socket;
         zmq::socket_t output_socket;
-        size_t input_port;
-        size_t output_port;
-        std::string connect_address;
+        zmq::socket_t control_socket;
 };
 
 } //namespace poisson1d
