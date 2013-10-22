@@ -35,12 +35,14 @@ class Gatherer
     public:
     Gatherer(size_t input_port,
              size_t control_port,
+             bool solve_flag = true,
              const std::string& bind_host = "*",
              const std::string& control_host = "*");
 
     void gather();
 
     private:
+        bool solve;
         zmq::context_t context;
         zmq::socket_t input_socket;
         zmq::socket_t control_socket;

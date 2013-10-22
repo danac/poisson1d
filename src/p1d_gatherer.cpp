@@ -32,9 +32,10 @@ namespace poisson1d {
 
 Gatherer::Gatherer(size_t input_port,
                    size_t control_port,
+                   bool solve_flag,
                    const std::string& bind_host,
                    const std::string& control_host)
-: context(1), input_socket(context, ZMQ_PULL), control_socket(context, ZMQ_PUB)
+: solve(solve_flag), context(1), input_socket(context, ZMQ_PULL), control_socket(context, ZMQ_PUB)
 {
     std::stringstream sstream;
     sstream << "tcp://" << bind_host << ":" << input_port;
@@ -78,16 +79,25 @@ void Gatherer::gather()
 
     zmq::message_t kill_msg(5);
     memcpy(kill_msg.data(), "KILL", 5);
-    control_socket.send(kill_msg);
+    //control_socket.send(kill_msg);
     std::cout << "Published kill signal to workers" << std::endl;
 
     const Real* matrix_ptr = merger.get_matrix_ptr();
     const Real* rhs_ptr = merger.get_rhs_ptr();
 
-    Solver solver(matrix_ptr, rhs_ptr, n);
-    Solution* solution = solver.get_solution_alloc();
+    if(solve)
+    {
+        Solver solver(matrix_ptr, rhs_ptr, n);
+        Solution* solution = solver.get_solution_alloc();
+        std::cout << "Solved system! Solution:" << std::endl;
 
-    delete solution;
+        for(size_t i(0); i < solution->get_n(); ++i)
+        {
+            //std::cout << solution->get_x_ptr()[i] << std::endl;
+        }
+
+        delete solution;
+    }
 }
 
 
