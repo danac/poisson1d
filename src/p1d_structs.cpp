@@ -370,4 +370,9 @@ const Real* Solution::get_x_ptr() const
     return x_ptr;
 }
 
+size_t Solution::get_n() const
+{
+    return n;
+}
+
 } //namespace poisson1d

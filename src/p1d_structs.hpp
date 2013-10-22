@@ -123,6 +123,7 @@ class Solution : public Packable {
         bool operator==(const Solution& other) const;
 
         const Real* get_x_ptr() const;
+        size_t get_n() const;
 
     private:
         Real* x_ptr;
