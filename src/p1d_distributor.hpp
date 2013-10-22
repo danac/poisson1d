@@ -37,7 +37,7 @@ class Distributor
         Distributor(size_t input_port,
                     size_t output_port,
                     size_t sink_port,
-                    const std::string& input_bind_host= "*",
+                    const std::string& input_host= "localhost",
                     const std::string& output_bind_host= "*",
                     const std::string& sink_host = "localhost");
         ~Distributor();

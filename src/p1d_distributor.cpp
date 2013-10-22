@@ -34,19 +34,19 @@ namespace poisson1d {
 Distributor::Distributor(size_t input_port,
                          size_t output_port,
                          size_t sink_port,
-                         const std::string& input_bind_host,
+                         const std::string& input_host,
                          const std::string& output_bind_host,
                          const std::string& sink_host)
 : problem_ptr(NULL),
   context(1),
-  input_socket(context, ZMQ_REQ),
+  input_socket(context, ZMQ_PULL),
   output_socket(context, ZMQ_PUSH),
   sink_socket(context, ZMQ_PUSH)
 {
     std::stringstream input_sstream;
-    input_sstream << "tcp://" << input_bind_host << ":" << input_port;
-    std::string input_bind_address = input_sstream.str();
-    input_socket.bind(input_bind_address.c_str());
+    input_sstream << "tcp://" << input_host << ":" << input_port;
+    std::string input_address = input_sstream.str();
+    input_socket.connect(input_address.c_str());
 
     std::stringstream output_sstream;
     output_sstream << "tcp://" << output_bind_host << ":" << output_port;
@@ -58,6 +58,10 @@ Distributor::Distributor(size_t input_port,
     std::string sink_address = sink_sstream.str();
     sink_socket.connect(sink_address.c_str());
     sleep(1);
+
+
+    //std::cerr << "[DISTRIBUTOR] " << input_sstream.str() << " " << output_sstream.str() << " ";
+    //std::cerr << sink_sstream.str() << std::endl;
 }
 
 Distributor::~Distributor()
@@ -90,7 +94,7 @@ void Distributor::distribute()
     memcpy(start_msg2.data(), &n, start_msg_size);
     sink_socket.send(start_msg2);
 
-    std::cout << "Sent problem info to sink!" << std::endl;
+    //std::cout << "Sent problem info to sink!" << std::endl;
 
     Partitioner partitioner(*problem_ptr);
     for (size_t job_id(0); job_id < problem_ptr->get_num_jobs(); ++job_id) {
@@ -102,7 +106,7 @@ void Distributor::distribute()
         zmq::message_t msg(buffer, job_size, utils::dealloc_hook);
         output_socket.send(msg);
         delete job;
-        std::cout << "Sent one job: " << job_id << std::endl;
+        //std::cout << "Sent one job: " << job_id << std::endl;
     }
 }
 

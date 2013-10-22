@@ -77,7 +77,7 @@ void Worker::work()
             Job job;
             job.unpack(input_buffer);
 
-            std::cout << "Received a job: " << job.get_rank() << std::endl;
+            //std::cout << "Received a job: " << job.get_rank() << std::endl;
 
             DistributedAssembler assembler(job);
 
@@ -89,7 +89,7 @@ void Worker::work()
             zmq::message_t msg(output_buffer, job_result_size, utils::dealloc_hook);
             output_socket.send(msg);
 
-            std::cout << "Sending a job result: " << job_result->get_rank() << std::endl;
+            //std::cout << "Sending a job result: " << job_result->get_rank() << std::endl;
 
             delete job_result;
         }

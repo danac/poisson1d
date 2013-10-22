@@ -46,6 +46,8 @@ Gatherer::Gatherer(size_t input_port,
     control_sstream << "tcp://" << control_host << ":" << control_port;
     std::string control_bind_address = control_sstream.str();
     control_socket.bind(control_bind_address.c_str());
+
+    //std::cerr << "GATHERER: " << sstream.str() << " " << control_sstream.str() << std::endl;
 }
 
 void Gatherer::gather()
@@ -61,7 +63,7 @@ void Gatherer::gather()
     input_buffer = static_cast<size_t*>(start_msg2.data());
     size_t n = *input_buffer;
 
-    std::cout << "Received problem info: " << num_jobs << " " << n << std::endl;
+    //std::cout << "Received problem info: " << num_jobs << " " << n << std::endl;
 
     Merger merger(n, num_jobs);
     for(size_t i(0); i < num_jobs; ++i)
@@ -74,13 +76,13 @@ void Gatherer::gather()
         job_result.unpack(input_buffer);
 
         merger.merge_job_result(job_result);
-        std::cout << "Received a job result: " << i << std::endl;
+        //std::cout << "Received a job result: " << i << std::endl;
     }
 
     zmq::message_t kill_msg(5);
     memcpy(kill_msg.data(), "KILL", 5);
     control_socket.send(kill_msg);
-    std::cout << "Published kill signal!" << std::endl;
+    //std::cout << "Published kill signal!" << std::endl;
 
     const Real* matrix_ptr = merger.get_matrix_ptr();
     const Real* rhs_ptr = merger.get_rhs_ptr();
@@ -89,18 +91,18 @@ void Gatherer::gather()
     {
         Solver solver(matrix_ptr, rhs_ptr, n);
         Solution* solution = solver.get_solution_alloc();
-        std::cout << "Solved system!" << std::endl;
+        //std::cout << "Solved system!" << std::endl;
 
         for(size_t i(0); i < solution->get_n(); ++i)
         {
-            std::cout << solution->get_x_ptr()[i] << std::endl;
+            //std::cout << solution->get_x_ptr()[i] << std::endl;
         }
 
         size_t solution_size = solution->get_n()*sizeof(Real);
         zmq::message_t solution_msg(solution_size);
         memcpy(solution_msg.data(), solution->get_x_ptr(), solution_size);
         control_socket.send(solution_msg);
-        std::cout << "Published solution!" << std::endl;
+        //std::cout << "Published solution!" << std::endl;
 
         delete solution;
     }

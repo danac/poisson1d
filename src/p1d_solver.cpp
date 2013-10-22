@@ -74,10 +74,10 @@ void Solver::solve(Real* x_ptr)
 
     solver.compute(A);
     assert(solver.info() == Eigen::Success);
-
+    std::cerr << "Starting solve...." << std:endl;
     x = solver.solve(b);
-    std::cout << "#iterations:     " << solver.iterations() << std::endl;
-    std::cout << "estimated error: " << solver.error()      << std::endl;
+    std::cerr << "#iterations:     " << solver.iterations() << std::endl;
+    std::cerr << "estimated error: " << solver.error()      << std::endl;
     assert(solver.info() == Eigen::Success);
 
     for(std::size_t i(0); i < n; ++i)
