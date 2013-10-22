@@ -27,6 +27,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <unistd.h>
 
 namespace poisson1d {
 
@@ -46,6 +47,7 @@ Distributor::Distributor(const Problem& problem,
     sink_sstream << "tcp://" << sink_host << ":" << sink_port;
     std::string sink_address = sink_sstream.str();
     sink_socket.connect(sink_address.c_str());
+    sleep(1);
 }
 
 void Distributor::distribute()
