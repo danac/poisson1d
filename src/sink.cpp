@@ -22,14 +22,25 @@
  */
 
 #include "p1d_gatherer.hpp"
+#include <cstdio>
 
 using namespace poisson1d;
 
 int main (int argc, char *argv[])
 {
-    Gatherer gatherer(13100, 13101);
+    if(argc < 3)
+    {
+        printf("Wrong number of arguments!\n");
+        printf("Syntax: sink <input_port> <publishing_port>");
+        return 1;
+    }
+
+    int input_port = atoi(argv[1]);
+    int pub_port = atoi(argv[2]);
+
+    Gatherer gatherer(input_port, pub_port);
     gatherer.gather();
-    sleep (1);              //  Give 0MQ time to deliver
+    sleep (1);
 
     return 0;
 }

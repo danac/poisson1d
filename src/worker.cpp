@@ -22,14 +22,26 @@
  */
 
 #include "p1d_worker.hpp"
+#include <cstdio>
 
 using namespace poisson1d;
 
 int main (int argc, char *argv[])
 {
-    Worker worker(13000, 13100, 13101);
-    worker.work();
-    sleep (1);              //  Give 0MQ time to deliver
+    if(argc < 4)
+    {
+        printf("Wrong number of arguments!\n");
+        printf("Syntax: worker <ventilator_port> <sink_port> <sink_publishing_port>");
+        return 1;
+    }
 
+    int vent_port = atoi(argv[1]);
+    int sink_port = atoi(argv[2]);
+    int sink_pub_port = atoi(argv[3]);
+
+    Worker worker(vent_port, sink_port, sink_pub_port);
+    worker.work();
+
+    sleep (1);
     return 0;
 }

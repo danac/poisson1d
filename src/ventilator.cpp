@@ -23,30 +23,30 @@
 
 #include <zmq.hpp>
 #include <unistd.h>
-#include <string>
+#include <cstdio>
 
 #include "p1d_structs.hpp"
-#include "p1d_mesh.hpp"
 #include "p1d_distributor.hpp"
 
 using namespace poisson1d;
 
 int main (int argc, char *argv[])
 {
-    Real a(0.0);
-    Real b(13.013);
-    Real fa(1);
-    Real fb(1);
-    size_t n(5);
-    std::string rhs_func("1");
-    size_t num_jobs(2);
+    if(argc < 4)
+    {
+        printf("Wrong number of arguments!\n");
+        printf("Syntax: ventilator <driver_port> <output_port> <sink_port>");
+        return 1;
+    }
 
-    Mesh mesh(a, b, n);
-    Problem problem(mesh, fa, fb, rhs_func, num_jobs);
+    int driver_port = atoi(argv[1]);
+    int output_port = atoi(argv[2]);
+    int sink_port = atoi(argv[3]);
 
-    Distributor distributor(problem, 13000, 13100);
-
+    Distributor distributor(driver_port, output_port, sink_port);
+    distributor.acquire();
     distributor.distribute();
+
     sleep(1);
     return 0;
 }

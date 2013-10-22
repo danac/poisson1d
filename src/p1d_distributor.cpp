@@ -31,23 +31,49 @@
 
 namespace poisson1d {
 
-Distributor::Distributor(const Problem& problem,
-                         size_t port,
+Distributor::Distributor(size_t input_port,
+                         size_t output_port,
                          size_t sink_port,
-                         const std::string& bind_host,
+                         const std::string& input_bind_host,
+                         const std::string& output_bind_host,
                          const std::string& sink_host)
-: problem_ptr(&problem), context(1), socket(context, ZMQ_PUSH), sink_socket(context, ZMQ_PUSH)
+: problem_ptr(NULL),
+  context(1),
+  input_socket(context, ZMQ_REQ),
+  output_socket(context, ZMQ_PUSH),
+  sink_socket(context, ZMQ_PUSH)
 {
-    std::stringstream sstream;
-    sstream << "tcp://" << bind_host << ":" << port;
-    std::string bind_address = sstream.str();
-    socket.bind(bind_address.c_str());
+    std::stringstream input_sstream;
+    input_sstream << "tcp://" << input_bind_host << ":" << input_port;
+    std::string input_bind_address = input_sstream.str();
+    input_socket.bind(input_bind_address.c_str());
+
+    std::stringstream output_sstream;
+    output_sstream << "tcp://" << output_bind_host << ":" << output_port;
+    std::string output_bind_address = output_sstream.str();
+    output_socket.bind(output_bind_address.c_str());
 
     std::stringstream sink_sstream;
     sink_sstream << "tcp://" << sink_host << ":" << sink_port;
     std::string sink_address = sink_sstream.str();
     sink_socket.connect(sink_address.c_str());
     sleep(1);
+}
+
+Distributor::~Distributor()
+{
+    delete problem_ptr;
+}
+
+void Distributor::acquire()
+{
+    zmq::message_t msg;
+
+    input_socket.recv(&msg);
+    Byte* input_buffer = static_cast<Byte*>(msg.data());
+    Problem* problem = new Problem();
+    problem->unpack(input_buffer);
+    problem_ptr = problem;
 }
 
 void Distributor::distribute()
@@ -74,7 +100,7 @@ void Distributor::distribute()
         job->pack(buffer);
 
         zmq::message_t msg(buffer, job_size, utils::dealloc_hook);
-        socket.send(msg);
+        output_socket.send(msg);
         delete job;
         std::cout << "Sent one job: " << job_id << std::endl;
     }

@@ -79,8 +79,8 @@ void Gatherer::gather()
 
     zmq::message_t kill_msg(5);
     memcpy(kill_msg.data(), "KILL", 5);
-    //control_socket.send(kill_msg);
-    std::cout << "Published kill signal to workers" << std::endl;
+    control_socket.send(kill_msg);
+    std::cout << "Published kill signal!" << std::endl;
 
     const Real* matrix_ptr = merger.get_matrix_ptr();
     const Real* rhs_ptr = merger.get_rhs_ptr();
@@ -89,12 +89,18 @@ void Gatherer::gather()
     {
         Solver solver(matrix_ptr, rhs_ptr, n);
         Solution* solution = solver.get_solution_alloc();
-        std::cout << "Solved system! Solution:" << std::endl;
+        std::cout << "Solved system!" << std::endl;
 
         for(size_t i(0); i < solution->get_n(); ++i)
         {
-            //std::cout << solution->get_x_ptr()[i] << std::endl;
+            std::cout << solution->get_x_ptr()[i] << std::endl;
         }
+
+        size_t solution_size = solution->get_n()*sizeof(Real);
+        zmq::message_t solution_msg(solution_size);
+        memcpy(solution_msg.data(), solution->get_x_ptr(), solution_size);
+        control_socket.send(solution_msg);
+        std::cout << "Published solution!" << std::endl;
 
         delete solution;
     }

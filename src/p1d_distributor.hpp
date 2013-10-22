@@ -34,19 +34,23 @@ namespace poisson1d {
 class Distributor
 {
     public:
-        Distributor(const Problem& problem,
-                    size_t port,
+        Distributor(size_t input_port,
+                    size_t output_port,
                     size_t sink_port,
-                    const std::string& bind_host= "*",
+                    const std::string& input_bind_host= "*",
+                    const std::string& output_bind_host= "*",
                     const std::string& sink_host = "localhost");
+        ~Distributor();
 
+        void acquire();
         void distribute();
 
     private:
         const Problem* problem_ptr;
 
         zmq::context_t context;
-        zmq::socket_t socket;
+        zmq::socket_t input_socket;
+        zmq::socket_t output_socket;
         zmq::socket_t sink_socket;
 
 };
