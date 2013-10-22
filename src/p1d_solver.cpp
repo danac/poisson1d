@@ -24,6 +24,7 @@
 #include "p1d_solver.hpp"
 #include <cassert>
 #include <Eigen/IterativeLinearSolvers>
+#include <iostream>
 
 namespace poisson1d {
 
@@ -68,16 +69,15 @@ void Solver::load_rhs_array(const Real* rhs_ptr)
 void Solver::solve(Real* x_ptr)
 {
     Vec x(n);
-    Eigen::BiCGSTAB<SparseMat> solver;
-    //solver.setMaxIterations(n*10);
+    Eigen::ConjugateGradient<SparseMat> solver;
+    solver.setMaxIterations(n*100);
 
     solver.compute(A);
     assert(solver.info() == Eigen::Success);
 
     x = solver.solve(b);
-    //std::cout << "#iterations:     " << solver.iterations() << std::endl;
-    //std::cout << "estimated error: " << solver.error()      << std::endl;
-    //std::cout << solver.info() <<  " " << Eigen::Success;
+    std::cout << "#iterations:     " << solver.iterations() << std::endl;
+    std::cout << "estimated error: " << solver.error()      << std::endl;
     assert(solver.info() == Eigen::Success);
 
     for(std::size_t i(0); i < n; ++i)
