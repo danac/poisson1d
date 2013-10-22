@@ -46,9 +46,7 @@ int main(int argc, char* argv[])
     size_t solution_size = solution.get_packed_size();
 
     Byte* buffer = new Byte[solution_size];
-    Byte* test_ptr(NULL);
-
-    test_ptr = solution.pack(buffer);
+    Byte* test_ptr = solution.pack(buffer);
     assert(test_ptr == buffer + solution_size);
 
     Solution new_solution;

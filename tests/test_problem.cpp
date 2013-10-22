@@ -45,9 +45,7 @@ int main(int argc, char* argv[])
     size_t problem_size = problem.get_packed_size();
 
     Byte* buffer = new Byte[problem_size];
-    Byte* test_ptr(NULL);
-
-    test_ptr = problem.pack(buffer);
+    Byte* test_ptr = problem.pack(buffer);
     assert(test_ptr == buffer + problem_size);
 
     Problem new_problem;

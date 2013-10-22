@@ -45,9 +45,7 @@ int main(int argc, char* argv[])
     size_t job_size = job.get_packed_size();
 
     Byte* buffer = new Byte[job_size];
-    Byte* test_ptr(NULL);
-
-    test_ptr = job.pack(buffer);
+    Byte* test_ptr = job.pack(buffer);
     assert(test_ptr == buffer + job_size);
 
     Job new_job;
