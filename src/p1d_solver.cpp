@@ -69,7 +69,7 @@ void Solver::load_rhs_array(const Real* rhs_ptr)
 void Solver::solve(Real* x_ptr)
 {
     Vec x(n);
-    Eigen::ConjugateGradient<SparseMat> solver;
+    Eigen::BiCGSTAB<SparseMat> solver;
     solver.setMaxIterations(n*100);
 
     solver.compute(A);
