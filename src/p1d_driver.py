@@ -88,7 +88,7 @@ class P1D_Driver:
         sink_command = [os.path.join(current_dir, self.executables['sink']), self.ports['sink'], self.ports['sink_pub']]
         sink_process = subp.Popen(sink_command)
         self.pids['sink'] = sink_process
-        print("[DRIVER] Spawned ventilator, PID ", sink_process.pid)
+        print("[DRIVER] Spawned ventilator, PID {}".format(sink_process.pid))
 
         # "Worker" processes (there may be several of them)
         self.pids['workers'] = []
@@ -96,13 +96,13 @@ class P1D_Driver:
         for i in range(0, self.parameters['num_jobs']):
             worker_process = subp.Popen(worker_comand)
             self.pids['workers'].append(worker_process)
-            print("[DRIVER] Spawned worker {}, PID ".format(i), worker_process.pid)
+            print("[DRIVER] Spawned worker {}, PID {}".format(i, worker_process.pid))
 
         # "Ventilator" process
         vent_command = [os.path.join(current_dir, self.executables['vent']), self.ports['driver'], self.ports['vent'], self.ports['sink']]
         vent_process = subp.Popen(vent_command)
         self.pids['vent'] = vent_process
-        print("[DRIVER] Spawned ventilator, PID ", vent_process.pid)
+        print("[DRIVER] Spawned ventilator, PID {}".format(vent_process.pid))
 
     # Function used to kill the C++ programs in case of interruption
     def kill_cpp_execs(self):

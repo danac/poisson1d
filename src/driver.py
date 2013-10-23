@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     driver.run()
 
-    print("[DRIVER] Assembly time: ", driver.assembly_time, "milliseconds")
+    print("[DRIVER] Assembly time: {} milliseconds".format(driver.assembly_time))
 
     driver.plot()
 
