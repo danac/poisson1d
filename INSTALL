@@ -1,9 +1,9 @@
 Long story short...
 -------------------
-For the impatient using Ubuntu, the following steps will get you up and running in no time:
+For the impatient user, the following steps will get you up and running in no time:
 
-0) Install the dependencies:
-sudo apt-get install zeromq cmake libboost-python-dev libboost-dev python-dev eigen3 muparser matplotlib
+0) Install the dependencies. If using Ubuntu:
+sudo apt-get install libzmq-dev cmake-curses-gui libboost-python-dev libboost-dev python-dev libeigen3-dev libmuparser-dev python-matplotlib
 
 1) Browse to the folder where you want to compile the program
 cd /tmp
@@ -37,23 +37,23 @@ The following packages are required in order to compile the library :
  - Python 3.x or 2.x (with header files)
  - Boost (standard header files and Python component)
 
-Both Python 2.x and Python 3.x are supported. However, the Boost Python component must be available for the version in use on the system.
-
 In Ubuntu, these packages can be installed with the following command:
-sudo apt-get install zeromq cmake libboost-python-dev libboost-dev python-dev
+sudo apt-get install libzmq-dev cmake-curses-gui libboost-python-dev libboost-dev python-dev
 
 The following packages are also needed but are included in the repository. If they are missing, they will be compiled automatically:
  - Eigen 3.2
  - MuParser 2.x
 
 In Ubuntu, these packages can be installed with the following command:
-sudo apt-get install eigen3 muparser
+sudo apt-get install libeigen3-dev libmuparser-dev
 
 To display a nice graph of the solution, the driver script uses Matplotlib:
  - Matplotlib
 
 In Ubuntu, Matplotlib can be installed with the following command:
-sudo apt-get install matplotlib
+sudo apt-get install python-matplotlib
+
+In current Ubuntu releases, Matplotlib is only available for Python 2.x. Both versions of Python are supported by this project and they are auto-detected by the build system.
 
 Compiling and installing
 ------------------------
