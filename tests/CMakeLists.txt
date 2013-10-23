@@ -1,5 +1,6 @@
-option(BUILD_POISSON1D_TESTS "Build the tests." ON)
-option(BUILD_POISSON1D_TESTS "Build the tests." OFF)
+if(NOT CMAKE_BUILD_TYPE MATCHES "Release" AND NOT CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE MATCHES "MinSizeRel")
+    set(BUILD_POISSON1D_TESTS "ON")
+endif(NOT CMAKE_BUILD_TYPE MATCHES "Release" AND NOT CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" AND NOT CMAKE_BUILD_TYPE MATCHES "MinSizeRel")
 
 if(BUILD_POISSON1D_TESTS)
 
@@ -10,10 +11,6 @@ if(BUILD_POISSON1D_TESTS)
     file(COPY test_boost_python.py DESTINATION .)
     add_test(test_boost_python test_boost_python.py)
     target_link_libraries(test_boost_python ${Boost_LIBRARIES})
-
-    add_executable(test_zeromq test_zeromq.cpp)
-    add_test(test_zeromq test_zeromq)
-    target_link_libraries(test_zeromq ${ZeroMQ_LIBRARIES})
 
     macro(add_cpp_test name)
     add_executable(${name} ${name}.cpp)

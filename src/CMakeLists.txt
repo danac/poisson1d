@@ -35,5 +35,7 @@ PYTHON_ADD_MODULE(py_poisson1d p1d_python_binding.cpp)
 target_link_libraries(py_poisson1d poisson1d)
 target_link_libraries(py_poisson1d ${Boost_LIBRARIES})
 
-FILE(COPY driver.py DESTINATION .)
-
+install(FILES driver.py DESTINATION .)
+install(TARGETS poisson1d py_poisson1d ventilator sink worker DESTINATION .)
+file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
+install(FILES ${headers} DESTINATION include)
