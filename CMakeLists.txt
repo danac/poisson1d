@@ -3,10 +3,20 @@ cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall" CACHE STRING "" FORCE)
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall" CACHE STRING "" FORCE)
+if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "-Wall" CACHE STRING "Specify additional C++ compiler flags." FORCE)
 endif()
+
+#if(NOT CMAKE_BUILD_TYPE)
+  #set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+      #"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      #FORCE)
+#endif(NOT CMAKE_BUILD_TYPE)
+
+set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install CACHE STRING "Install path prefix, prepended onto install  directories." FORCE)
+
+set(POISSON1D_INSTALL_LIB_DIR "lib")
+set(POISSON1D_INSTALL_BIN_DIR "bin")
 
 find_package(ZeroMQ REQUIRED)
 find_package(MuParser)
