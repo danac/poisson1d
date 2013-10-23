@@ -21,12 +21,12 @@ set(POISSON_1D_SRC
 
 add_library(poisson1d SHARED ${POISSON_1D_SRC})
 target_link_libraries(poisson1d ${MUPARSER_LIBRARIES} ${ZeroMQ_LIBRARIES})
-set_property(TARGET poisson1d PROPERTY INSTALL_RPATH .)
+set_property(TARGET poisson1d PROPERTY INSTALL_RPATH ${CMAKE_INSTALL_PREFIX})
 
 macro(add_poisson1d_executable name)
     add_executable(${name} ${name}.cpp)
     target_link_libraries(${name} poisson1d)
-    set_property(TARGET ${name} PROPERTY INSTALL_RPATH ../${POISSON1D_INSTALL_LIB_DIR})
+    set_property(TARGET ${name} PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${POISSON1D_INSTALL_LIB_DIR}")
 endmacro()
 
 add_poisson1d_executable(ventilator)
@@ -37,7 +37,8 @@ add_poisson1d_executable(sink-nosolve)
 PYTHON_ADD_MODULE(py_poisson1d p1d_python_binding.cpp)
 target_link_libraries(py_poisson1d poisson1d)
 target_link_libraries(py_poisson1d ${Boost_LIBRARIES})
-set_property(TARGET py_poisson1d PROPERTY INSTALL_RPATH .)
+# The RPATH must be relative to the Python script which will import it !
+set_property(TARGET py_poisson1d PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${POISSON1D_INSTALL_LIB_DIR}")
 
 install(TARGETS py_poisson1d poisson1d sink sink-nosolve worker ventilator
         LIBRARY DESTINATION ${POISSON1D_INSTALL_LIB_DIR}
