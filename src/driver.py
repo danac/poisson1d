@@ -48,15 +48,19 @@ if __name__ == "__main__":
     }
 
     # The main C++ executables (relative to this script location)
+    # sink-nosolve does not solve and returns an array filled with zeros instead
     executables = {
         'vent'    : "./ventilator",
         'sink'    : "./sink",
+        #'sink'    : "./sink-nosolve",
         'workers' : "./worker"
     }
 
     driver = P1D_Driver(parameters=parameters, ports=ports, executables=executables)
 
-    driver.solve()
+    driver.run()
+
+    print("[DRIVER] Assembly time: ", driver.assembly_time, "milliseconds")
 
     driver.plot()
 
