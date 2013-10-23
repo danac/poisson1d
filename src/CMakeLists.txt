@@ -32,13 +32,14 @@ endmacro()
 add_poisson1d_executable(ventilator)
 add_poisson1d_executable(worker)
 add_poisson1d_executable(sink)
+add_poisson1d_executable(sink-nosolve)
 
 PYTHON_ADD_MODULE(py_poisson1d p1d_python_binding.cpp)
 target_link_libraries(py_poisson1d poisson1d)
 target_link_libraries(py_poisson1d ${Boost_LIBRARIES})
 set_property(TARGET py_poisson1d PROPERTY INSTALL_RPATH .)
 
-install(TARGETS py_poisson1d poisson1d sink worker ventilator
+install(TARGETS py_poisson1d poisson1d sink sink-nosolve worker ventilator
         LIBRARY DESTINATION ${POISSON1D_INSTALL_LIB_DIR}
         RUNTIME DESTINATION bin)
 
