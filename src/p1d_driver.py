@@ -29,6 +29,10 @@ import six
 import numpy as np
 import subprocess as subp
 
+# Hack to find a module in an arbitrary location (py_poisson1d.so is in ../lib)
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+sys.path.insert(0, os.path.join(current_dir, '..', 'lib'))
+
 import py_poisson1d as p1d
 
 class P1D_Driver:
