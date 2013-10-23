@@ -26,7 +26,7 @@ make test
 7) Install
 make install
 
-8) Everything is ready for you to play with in the install folder!
+8) Everything is ready for you to play in the install folder!
 
 Dependencies
 ------------
@@ -58,11 +58,11 @@ Compiling and installing
 ------------------------
 Building the progam is done according to the steps described above. All unit tests must pass for the program to run correctly.
 
-The program can be compiled in Release mode for improved performance. This can be done by browsing to the build folder and invoking the following command:
-ccmake ..
-Entering "Release" in the CMAKE_BUILD_TYPE field, and pressing the 'c', 'g' and 'q' will reconfigure the build tree. Then, recompiling with
+The program can be compiled in Release mode (with -O3 -DNDEBUG flags) for improved performance. This can be done by browsing to the build folder and invoking the following command:
+ccmake .
+To reconfigure the build tree, move the cursor to the CMAKE_BUILD_TYPE field, press Enter, type "Release", press Enter again and hit the 'c', 'g' and 'q' keys. Then, recompiling with
 make
 make install
 will build the whole program in Release mode.
 
-Please note that the test suite is disabled in this mode, since all assert statements are ignored.
+Please note that the test suite is disabled in this mode, since all assert statements are removed by the preprocessor.
