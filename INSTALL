@@ -1,0 +1,68 @@
+Long story short...
+-------------------
+For the impatient using Ubuntu, the following steps will get you up and running in no time:
+
+0) Install the dependencies:
+sudo apt-get install zeromq cmake libboost-python-dev libboost-dev python-dev eigen3 muparser matplotlib
+
+1) Browse to the folder where you want to compile the program
+cd /tmp
+
+2) Clone the BitBucket repository
+git clone git@bitbucket.org:danachristen/poisson1d.git
+
+3) Create a build and an install folder inside the source tree
+cd poisson1d && mkdir build && mkdir install && cd build
+
+4) Invoke CMake one level up
+cmake -DCMAKE_INSTALL_PREFIX=../install ..
+
+5) Compile
+make -j
+
+6) Run the test suite. All of them should pass! :)
+make test
+
+7) Install
+make install
+
+8) Everything is ready for you to play with in the install folder!
+
+Dependencies
+------------
+The following packages are required in order to compile the library :
+ - CMake 2.8
+ - ZeroMQ 2.x
+ - Python 3.x or 2.x (with header files)
+ - Boost (standard header files and Python component)
+
+Both Python 2.x and Python 3.x are supported. However, the Boost Python component must be available for the version in use on the system.
+
+In Ubuntu, these packages can be installed with the following command:
+sudo apt-get install zeromq cmake libboost-python-dev libboost-dev python-dev
+
+The following packages are also needed but are included in the repository. If they are missing, they will be compiled automatically:
+ - Eigen 3.2
+ - MuParser 2.x
+
+In Ubuntu, these packages can be installed with the following command:
+sudo apt-get install eigen3 muparser
+
+To display a nice graph of the solution, the driver script uses Matplotlib:
+ - Matplotlib
+
+In Ubuntu, Matplotlib can be installed with the following command:
+sudo apt-get install matplotlib
+
+Compiling and installing
+------------------------
+Building the progam is done according to the steps described above. All unit tests must pass for the program to run correctly.
+
+The program can be compiled in Release mode for improved performance. This can be done by browsing to the build folder and invoking the following command:
+ccmake ..
+Entering "Release" in the CMAKE_BUILD_TYPE field, and pressing the 'c', 'g' and 'q' will reconfigure the build tree. Then, recompiling with
+make
+make install
+will build the whole program in Release mode.
+
+Please note that the test suite is disabled in this mode, since all assert statements are ignored.

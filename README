@@ -1,0 +1,35 @@
+###############
+## POISSON1D ##
+###############
+
+Poisson1D is a program aiming at solving the 1D Poisson equation with linear (P1) finite-elements, using decentralized processes communicating with ZeroMQ TCP sockets. It currently assembles the finite-elements using an arbitrary number of processes.
+
+Building
+--------
+Instructions for compiling and installing the program are given in the INSTALL file.
+
+Running
+-------
+After compiling and installing, the program can be run using the driver.py Python script. The following problem parameters can be modified in this script:
+ - a, b: the boundaries of the 1D domain
+ - fa, fb: the correponding Dirichlet boundary conditions
+ - n: the total number of nodes in the 1D mesh (including boundary nodes)
+ - rhs_func: mathematical expression for the right-hand side function (some basic functions are supported, such as trigonometric functions)
+ - num_jobs: number of parallel processes involved for the matrix assembly
+
+This driver script launches a bunch of C++ processes bound on the ports given in the 'ports' dictionary defined under the previous parameters, and communicates with them through ZeroMQ sockets. Once the solution is retrieved, it displays it in a Matplotlib window, along with the righ-hand side function.
+
+A few words on the implementation
+---------------------------------
+The program consists in a two libraries, three executables and a Python driver script:
+ - libpoisson1d.so contains the core functionalities
+ - py_poisson1d.so contains a thin Python binding exposing some data types to make it easier to drive the program from within a Python program
+ - ventilator, worker, sink are the main executables implementing a parallel pipeline model based on ZeroMQ. The ventilator receives
+ - driver.py is the main driver script which launches and communicates with the previous three programs.
+
+Features
+--------
+
+
+Future developments
+-------------------
