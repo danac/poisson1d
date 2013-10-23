@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <sys/time.h>
 
 namespace poisson1d {
 
@@ -63,6 +64,9 @@ void Gatherer::gather()
     input_buffer = static_cast<size_t*>(start_msg2.data());
     size_t n = *input_buffer;
 
+    struct timeval tstart;
+    gettimeofday (&tstart, NULL);
+
     //std::cout << "Received problem info: " << num_jobs << " " << n << std::endl;
 
     Merger merger(n, num_jobs);
@@ -79,6 +83,19 @@ void Gatherer::gather()
         //std::cout << "Received a job result: " << i << std::endl;
     }
 
+    struct timeval tend, tdiff;
+    gettimeofday (&tend, NULL);
+
+    if (tend.tv_usec < tstart.tv_usec) {
+        tdiff.tv_sec = tend.tv_sec - tstart.tv_sec - 1;
+        tdiff.tv_usec = 1000000 + tend.tv_usec - tstart.tv_usec;
+    }
+    else {
+        tdiff.tv_sec = tend.tv_sec - tstart.tv_sec;
+        tdiff.tv_usec = tend.tv_usec - tstart.tv_usec;
+    }
+
+    Real assembly_time = tdiff.tv_sec * 1000 + tdiff.tv_usec / 1000;
     zmq::message_t kill_msg(5);
     memcpy(kill_msg.data(), "KILL", 5);
     control_socket.send(kill_msg);
@@ -87,25 +104,45 @@ void Gatherer::gather()
     const Real* matrix_ptr = merger.get_matrix_ptr();
     const Real* rhs_ptr = merger.get_rhs_ptr();
 
+    const Real* x_ptr(NULL);
+    Solution* solution(NULL);
     if(solve)
     {
         Solver solver(matrix_ptr, rhs_ptr, n);
         Solution* solution = solver.get_solution_alloc();
         //std::cout << "Solved system!" << std::endl;
 
-        for(size_t i(0); i < solution->get_n(); ++i)
+        x_ptr = solution->get_x_ptr();
+    }
+    else
+    {
+        Real* solution = new Real[n];
+        for(size_t i(0); i < n; ++i)
         {
-            //std::cout << solution->get_x_ptr()[i] << std::endl;
+            solution[i] = 0.0;
         }
+        x_ptr = solution;
+    }
 
-        size_t solution_size = solution->get_n()*sizeof(Real);
-        zmq::message_t solution_msg(solution_size);
-        memcpy(solution_msg.data(), solution->get_x_ptr(), solution_size);
-        control_socket.send(solution_msg);
-        //std::cout << "Published solution!" << std::endl;
+    size_t assembly_time_size = sizeof(assembly_time);
+    size_t solution_size = n*sizeof(Real);
+    zmq::message_t solution_msg(solution_size);
+    zmq::message_t assembly_time_msg(assembly_time_size);
+    memcpy(assembly_time_msg.data(), &assembly_time, assembly_time_size);
+    memcpy(solution_msg.data(), x_ptr, solution_size);
+    control_socket.send(assembly_time_msg, ZMQ_SNDMORE);
+    control_socket.send(solution_msg);
+    //std::cout << "Published solution!" << std::endl;
 
+    if(solve)
+    {
         delete solution;
     }
+    else
+    {
+        delete[] x_ptr;
+    }
+
 }
 
 

@@ -21,13 +21,15 @@
 #
 #
 
-import sys, inspect, os
+import sys, os
+import trace, inspect
 import zmq
-import py_poisson1d as p1d
+import struct
+import six
 import numpy as np
 import subprocess as subp
-import six
-import trace
+
+import py_poisson1d as p1d
 
 class P1D_Driver:
 
@@ -47,10 +49,16 @@ class P1D_Driver:
         # 0MQ socket used to retrive the solution from the C++ "sink"
         self.result_socket = None
 
-        # Future Numpy arrays holding the x coordinates, the solution and the right-hand side vectors
-        self.solution = None
-        self.x = None
-        self.rhs = None
+        # Future buffer containing the solution
+        self.solution_buffer = None
+
+        # Total time spent by the C++ processes assembling the finite-elements matrix
+        self.assembly_time = 0
+
+        self.solving = True
+
+        if "nosolve" in self.executables['sink']:
+            self.solving = False
 
         """ Initialization """
         # Convert the port numbers to strings for convenience
@@ -105,8 +113,7 @@ class P1D_Driver:
             else:
                 val.kill()
 
-    def solve(self):
-        # Create an instance of the C++ Problem class using the binding
+    def run(self):
         a = self.parameters['a']
         b = self.parameters['b']
         n = self.parameters['n']
@@ -115,6 +122,7 @@ class P1D_Driver:
         rhs_func = self.parameters['rhs_func']
         num_jobs = self.parameters['num_jobs']
 
+        # Create an instance of the C++ Problem class using the binding
         mesh = p1d.Mesh(a, b, n)
         problem = p1d.Problem(mesh, fa, fb, rhs_func, num_jobs)
 
@@ -140,8 +148,11 @@ class P1D_Driver:
 
                 # Ignore the kill signal meant to shutdown the workers
                 if message != b'KILL\x00':
-                    buf = bytearray(message)
-                    self.solution = np.frombuffer(buf, dtype=np.float64)
+                    # We actually receive a multipart message
+                    # The first part is the assembly time...
+                    self.assembly_time = struct.unpack('d', message)[0]
+                    # ...and the second part is the solution vector
+                    self.solution_buffer = self.result_socket.recv()
                     break;
 
             # In case of an interrupt, kill the C++ processes
@@ -150,7 +161,16 @@ class P1D_Driver:
                 self.kill_cpp_execs(pids)
                 break;
 
-        if not interrupt:
+    def plot(self):
+        if self.solving:
+            a = self.parameters['a']
+            b = self.parameters['b']
+            n = self.parameters['n']
+            rhs_func = self.parameters['rhs_func']
+
+            # Trick to get the size of a double on the machine
+            dtype = eval("np.float"+str(struct.calcsize('d')*8))
+            solution = np.frombuffer(self.solution_buffer, dtype=dtype)
             # Create a function handle based on the expression for the right-hand side
             rhs_lambda = lambda x: eval(rhs_func)
 
@@ -158,17 +178,17 @@ class P1D_Driver:
             rhs_f = np.vectorize(rhs_lambda)
 
             # Allocate arrays for the x variable and for the right-hand side function
-            self.x = np.linspace(a, b, n)
-            self.rhs = self.x
-            self.rhs = rhs_f(self.rhs)
-
-    def plot(self):
-        # Plot the final results
-        self._plot(self.x, self.rhs, self.solution)
+            x = np.linspace(a, b, n)
+            rhs = x
+            rhs = rhs_f(rhs)
+            # Plot the final results
+            self.draw(x, rhs, solution)
+        else:
+            print("[DRIVER] Nothing to plot because the problem was not solved, only assembled.")
 
     # Function used to plot the solution and right-hand side
     @staticmethod
-    def _plot(x, rhs, solution):
+    def draw(x, rhs, solution):
         import matplotlib.pyplot as plt
 
         # Make the font slightly larger
