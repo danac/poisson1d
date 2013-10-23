@@ -1,10 +1,10 @@
-if(MUPARSER_FOUND)
+if(NOT MUPARSER_FOUND)
     message(STATUS "MuParser will be compiled")
     add_subdirectory(muparser-2.2.3)
     set(MUPARSER_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/muparser-2.2.3)
     set(MUPARSER_INCLUDE_DIRS ${MUPARSER_SRC_PATH}/include PARENT_SCOPE)
     set(MUPARSER_LIBRARIES muparser PARENT_SCOPE)
-endif(MUPARSER_FOUND)
+endif(NOT MUPARSER_FOUND)
 
 if(NOT EIGEN3_FOUND)
     message(STATUS "Using provided Eigen v3.2 header files.")
