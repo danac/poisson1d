@@ -41,7 +41,8 @@ target_link_libraries(py_poisson1d ${Boost_LIBRARIES})
 set_property(TARGET py_poisson1d PROPERTY INSTALL_RPATH .)
 install(TARGETS py_poisson1d DESTINATION .)
 
-install(FILES driver.py DESTINATION .)
+file(COPY p1d_driver.py driver.py DESTINATION .)
+install(FILES p1d_driver.py driver.py DESTINATION .)
 
 file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 install(FILES ${headers} DESTINATION include)
