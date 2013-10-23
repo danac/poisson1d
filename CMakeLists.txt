@@ -24,3 +24,5 @@ enable_testing()
 add_subdirectory(third-party)
 add_subdirectory(src)
 add_subdirectory(tests)
+
+message(STATUS "Installation prefix set to: ${CMAKE_INSTALL_PREFIX}")
