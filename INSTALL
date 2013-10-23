@@ -14,8 +14,8 @@ git clone git@bitbucket.org:danachristen/poisson1d.git
 3) Create a build and an install folder inside the source tree
 cd poisson1d && mkdir build && mkdir install && cd build
 
-4) Invoke CMake one level up
-cmake -DCMAKE_INSTALL_PREFIX=../install ..
+4) Invoke CMake in the parent folder
+cmake ..
 
 5) Compile
 make -j
@@ -26,7 +26,8 @@ make test
 7) Install
 make install
 
-8) Everything is ready for you to play in the install folder!
+8) Everything is ready one level up, in the install folder!
+cd ../install
 
 Dependencies
 ------------
