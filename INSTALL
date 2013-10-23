@@ -27,7 +27,8 @@ make test
 make install
 
 8) Everything is ready one level up, in the install folder!
-cd ../install
+cd ../install/bin
+python driver.py
 
 Dependencies
 ------------
