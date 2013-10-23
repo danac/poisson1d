@@ -1,6 +1,6 @@
-###############
-## POISSON1D ##
-###############
+-----------------------
+POISSON1D DOCUMENTATION
+-----------------------
 
 Poisson1D is a program aiming at solving the 1D Poisson equation with linear (P1) finite-elements, using decentralized processes communicating with ZeroMQ TCP sockets. It currently assembles the finite-elements using an arbitrary number of processes.
 
@@ -10,26 +10,48 @@ Instructions for compiling and installing the program are given in the INSTALL f
 
 Running
 -------
-After compiling and installing, the program can be run using the driver.py Python script. The following problem parameters can be modified in this script:
+After compiling and installing, the program can be used by running the driver.py Python script.
+This script launches a bunch of C++ processes and communicates with them through ZeroMQ sockets. Once the solution is retrieved, it displays it in a Matplotlib window along with the righ-hand side function, and prints the measured assembly time in the console.
+
+The following problem parameters can be modified in this script:
  - a, b: the boundaries of the 1D domain
  - fa, fb: the correponding Dirichlet boundary conditions
  - n: the total number of nodes in the 1D mesh (including boundary nodes)
  - rhs_func: mathematical expression for the right-hand side function (some basic functions are supported, such as trigonometric functions)
  - num_jobs: number of parallel processes involved for the matrix assembly
 
-This driver script launches a bunch of C++ processes bound on the ports given in the 'ports' dictionary defined under the previous parameters, and communicates with them through ZeroMQ sockets. Once the solution is retrieved, it displays it in a Matplotlib window, along with the righ-hand side function.
+The "ports" dictionary defined in driver.py holds the port numbers to which the script and the C++ programs bind to communiate with each other.
+
+The "executables" dictionary specifies the names of the C++ executables. Choosing "sink-nosolve" instead of "sink" disables the solving step. Hence the matrix is only assembled by the parallel worker without further processing. This speeds up tremendously the execution, especially for large problems.
+
+The maximum numer of iterations is set to 100 times the number of nodes (hard-coded in solver.cpp). The method used is the Biconjugate Gradient Stabilized method (BiCGSTAB) as implemented in Eigen3. Initially, the Conjugate Gradient method was meant to be used, but the implementation in Eigen3 exhibits unstable behavior and sometimes yields wrong solutions, even though the 1D Poisson matrix is symmetric positive-definite...
+
 
 A few words on the implementation
 ---------------------------------
-The program consists in a two libraries, three executables and a Python driver script:
+The program consists in a two shared libraries, four executables and two Python files:
  - libpoisson1d.so contains the core functionalities
  - py_poisson1d.so contains a thin Python binding exposing some data types to make it easier to drive the program from within a Python program
- - ventilator, worker, sink are the main executables implementing a parallel pipeline model based on ZeroMQ. The ventilator receives
+ - ventilator, worker, sink and sink-nosolve are the main executables implementing a parallel pipeline model based on ZeroMQ for the matrix assembly. Solving is done in serial by the sink program using an iterative method provided by the Eigen3 template library.
  - driver.py is the main driver script which launches and communicates with the previous three programs.
+ - p1d_driver.py contains a Python class with the routines required to deal with the C++ programs and plot the solution.
 
-Features
---------
+The only file the end-user should be using is driver.py.
 
+Some features
+-------------
+The current implementation tries to be as flexible and modular as possible while offering high performance.
 
-Future developments
+The overall communiation scheme matches the "ventilator-workers-sink" model introduced in the ZeroMQ documentation. The Python driver script sends the problem parameters to the sink and receives the solution and measured assembly time from the sink.
+
+Thanks to the use of C++ iterators to loop over the mesh nodes, all modules of the program can handle any mesh class that exports a random constant iterator interface. Currently, only a simple mesh class is implemented which simulates a regular mesh through the iterator interface (the position of the nodes is not "stored" in the class).
+
+Object serialization is performed manually to and from plain byte buffer, to avoid the overhead of C++ streams. This also allows to take advantage of ZeroMQ's zero-copy strategy (giving the ZMQ message ownership of the buffer where the object to transmit is serialized).
+
+No duplicates of large data arrays are created in the C++ programs.
+
+Future improvements
 -------------------
+Making the current Mesh class a child of an abstract base class exporting a const_iterator interface.
+
+Implementing support for heterogenous environments (i.e. clusters with different data type sizes and byte orderings).
