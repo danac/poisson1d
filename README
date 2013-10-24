@@ -48,7 +48,7 @@ Thanks to the use of C++ iterators to loop over the mesh nodes, all modules of t
 
 Object serialization is performed manually to and from plain byte buffer, to avoid the overhead of C++ streams. This also allows to take advantage of ZeroMQ's zero-copy strategy (giving the ZMQ message ownership of the buffer where the object to transmit is serialized).
 
-No duplicates of large data arrays are created in the C++ programs.
+No duplicates of large data arrays are created in the C++ programs, except once in the solver class, where the full matrix is copied into an Eigen data structure.
 
 Future improvements
 -------------------
