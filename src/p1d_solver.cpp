@@ -23,7 +23,7 @@
 
 #include "p1d_solver.hpp"
 #include <cassert>
-#include <Eigen/IterativeLinearSolvers>
+#include <Eigen/SparseLU>
 #include <iostream>
 
 namespace poisson1d {
@@ -69,15 +69,11 @@ void Solver::load_rhs_array(const Real* rhs_ptr)
 void Solver::solve(Real* x_ptr)
 {
     Vec x(n);
-    Eigen::BiCGSTAB<SparseMat> solver;
-    solver.setMaxIterations(n*100);
+    Eigen::SparseLU<SparseMat> solver;
 
     solver.compute(A);
     assert(solver.info() == Eigen::Success);
-    std::cerr << "[C++ Solver] Starting solve...." << std::endl;
     x = solver.solve(b);
-    std::cerr << "[C++ Solver] #iterations:     " << solver.iterations() << std::endl;
-    std::cerr << "[C++ Solver] estimated error: " << solver.error()      << std::endl;
     assert(solver.info() == Eigen::Success);
 
     for(std::size_t i(0); i < n; ++i)
