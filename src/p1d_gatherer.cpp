@@ -69,7 +69,7 @@ void Gatherer::gather()
 
     //std::cout << "Received problem info: " << num_jobs << " " << n << std::endl;
 
-    Merger merger(n, num_jobs);
+    Merger* merger = new Merger(n, num_jobs);
     for(size_t i(0); i < num_jobs; ++i)
     {
         zmq::message_t msg;
@@ -79,7 +79,7 @@ void Gatherer::gather()
         JobResult job_result;
         job_result.unpack(input_buffer);
 
-        merger.merge_job_result(job_result);
+        merger->merge_job_result(job_result);
         //std::cout << "Received a job result: " << i << std::endl;
     }
 
@@ -101,16 +101,18 @@ void Gatherer::gather()
     control_socket.send(kill_msg);
     //std::cout << "Published kill signal!" << std::endl;
 
-    const Real* matrix_ptr = merger.get_matrix_ptr();
-    const Real* rhs_ptr = merger.get_rhs_ptr();
+    const Real* matrix_ptr = merger->get_matrix_ptr();
+    const Real* rhs_ptr = merger->get_rhs_ptr();
 
     const Real* x_ptr(NULL);
     Solution* solution(NULL);
+
     if(solve)
     {
         Solver solver(matrix_ptr, rhs_ptr, n);
+        delete merger;
+
         Solution* solution = solver.get_solution_alloc();
-        //std::cout << "Solved system!" << std::endl;
 
         x_ptr = solution->get_x_ptr();
     }
@@ -142,8 +144,6 @@ void Gatherer::gather()
     {
         delete[] x_ptr;
     }
-
 }
-
 
 } //namespace poisson1d
