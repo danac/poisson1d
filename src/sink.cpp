@@ -23,6 +23,7 @@
 
 #include "p1d_gatherer.hpp"
 #include <cstdio>
+#include <unistd.h>
 
 using namespace poisson1d;
 
