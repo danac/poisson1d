@@ -32,7 +32,6 @@
 using namespace poisson1d;
 using namespace std;
 
-
 void dump_matrix_ptr(const Real* matrix_ptr, size_t n)
 {
     size_t count(0);
@@ -67,7 +66,7 @@ int main(int argc, char* argv[])
     size_t n(3);
     Real a(0), b(1);
     Real fa(10), fb(2);
-    Real ref_value[3] = {10., 25./4, 2.};
+    Real ref_value[3] = {10., 49./8, 2.};
     Real epsilon = std::numeric_limits<Real>::epsilon();
     std::string rhs_func("1");
     size_t num_jobs(1);

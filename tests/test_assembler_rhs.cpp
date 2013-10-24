@@ -92,7 +92,17 @@ void test_rhs_5_mesh(MeshGlobalPosition position)
 
     for (size_t i(1); i < rhs_size - rhs_end_clip; ++i)
     {
-        Real expected_value = a+i*dx;
+        Real center = a+i*dx;
+        Real left = center-dx;
+        Real mid_left = (center+left)/2;
+        Real right = center+dx;
+        Real mid_right = (center+right)/2;
+
+        Real left_integral = (center-left)/6 * (0.0 + 4*mid_left*0.5 + center);
+        Real right_integral = (right-center)/6 * (center + 4*mid_right*0.5 + 0.0);
+
+        Real expected_value = left_integral + right_integral;
+
         size_t index = i-1+rhs_loop_start;
         Real diff = std::abs(rhs_ptr[index] - expected_value);
         printf(" rhs_ptr[%lu]=%.2f expected %.2f diff %.2e \n", index, rhs_ptr[index], expected_value, diff);

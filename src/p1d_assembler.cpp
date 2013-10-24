@@ -118,8 +118,27 @@ void DistributedAssembler::assemble_rhs(Real* rhs_ptr) const
 
     for (; mesh_it != mesh_end; ++mesh_it, ++i)
     {
-        x = *mesh_it;
-        rhs_ptr[i] = p.Eval();
+        Real left = *(mesh_it-1);
+        Real mid_left = (*(mesh_it-1) + *mesh_it)/2;
+        Real center = *mesh_it;
+        Real mid_right =(*(mesh_it+1) + *mesh_it)/2;
+        Real right = *(mesh_it+1);
+
+        // Values of the right-hand side function at i-1, i, i+1 and the midpoints
+        x = mid_left;
+        Real f_mid_left = p.Eval();
+
+        x = center;
+        Real f_center = p.Eval();
+
+        x = mid_right;
+        Real f_mid_right = p.Eval();
+
+        // Integral of right-hand side multiplied by the P1 basis function
+        Real left_integral = (center-left)/6 * (0.0 + 4*f_mid_left*0.5 + f_center);
+        Real right_integral = (right-center)/6 * (f_center + 4*f_mid_right*0.5 + 0.0);
+
+        rhs_ptr[i] = left_integral + right_integral;
     }
 }
 
