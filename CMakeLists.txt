@@ -13,7 +13,9 @@ endif()
       #FORCE)
 #endif(NOT CMAKE_BUILD_TYPE)
 
+if(CMAKE_INSTALL_PREFIX MATCHES "/usr/bin")
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install CACHE STRING "Install path prefix, prepended onto install  directories." FORCE)
+endif(CMAKE_INSTALL_PREFIX MATCHES "/usr/bin")
 
 set(POISSON1D_INSTALL_LIB_DIR "lib")
 set(POISSON1D_INSTALL_BIN_DIR "bin")
