@@ -22,6 +22,7 @@
  */
 
 #include "p1d_helper_functions.hpp"
+#include <iostream>
 
 namespace poisson1d {
 namespace utils {
@@ -30,19 +31,21 @@ size_t get_job_nnz(size_t job_id, size_t n, size_t num_jobs)
 {
     size_t job_nnz(0);
     size_t job_rows = get_job_rows(job_id, n, num_jobs);
+    //std::cout << job_rows << " rows!!" << std::endl;
 
-    if(job_id == 0 || job_id == num_jobs-1)
-    {
-        job_nnz = (job_rows-1)*3+1;
-    }
-    else if(num_jobs == 1)
+    if(num_jobs == 1)
     {
         job_nnz = get_matrix_nnz(n);
+    }
+    else if(job_id == 0 || job_id == num_jobs-1)
+    {
+        job_nnz = (job_rows-1)*3+1;
     }
     else
     {
         job_nnz = job_rows*3;
     }
+    //std::cout << job_nnz << " non-zeros!" << std::endl;
     return job_nnz;
 }
 

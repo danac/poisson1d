@@ -96,7 +96,7 @@ void MeshConstIterator::compute_node()
     Real b = mesh_ptr->get_upper_bound();
     Real n = mesh_ptr->get_num_nodes();
     Real dx = (b - a) / (n - 1);
-    node = index * dx;
+    node = a + index * dx;
 }
 
 } //namespace poisson1d

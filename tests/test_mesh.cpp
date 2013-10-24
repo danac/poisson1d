@@ -32,7 +32,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    Real a(0.0);
+    Real a(-3.13);
     Real b(1.0);
     size_t n(10);
     Real dx = (b-a)/(n-1);
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     printf("Testing forward iteration... \n");
     for(mesh_it = mesh.begin(); mesh_it != mesh.end(); ++mesh_it, ++i)
     {
-        Real expected_value = i*dx;
+        Real expected_value = a+i*dx;
         Real diff = std::abs(*mesh_it - expected_value);
         printf(" i = %lu | *mesh_it = %.2f | expected %.2f | error %.2e \n", i, *mesh_it, expected_value, diff);
         assert(diff <= epsilon);
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
     mesh_it = mesh.begin();
     for(size_t i(0); i < n-1; ++i)
     {
-        Real expected_value = i*dx;
+        Real expected_value = a+i*dx;
         Real diff = std::abs(mesh_it[i] - expected_value);
         printf(" i = %lu | *mesh_it = %.2f | expected %.2f | error %.2e \n", n-1-i, *mesh_it, expected_value, diff);
         assert(diff <= epsilon);
