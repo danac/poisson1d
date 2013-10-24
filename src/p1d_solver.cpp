@@ -40,7 +40,6 @@ Solver::~Solver()
 
 void Solver::load_matrix_array(const Real* matrix_ptr)
 {
-    std::cout << "Converting the matrix" << std::endl;
     size_t m = 3*(n-2)+2;
     A.reserve(Eigen::VectorXi::Constant(n,3));
     A.insert(0,0) = matrix_ptr[0];
@@ -51,11 +50,11 @@ void Solver::load_matrix_array(const Real* matrix_ptr)
     for(std::size_t i(2); i < n-2; ++i)
     {
         A.insert(i-1,i) = matrix_ptr[(i-2)*3+1+2];
-        printf("%lu,%lu=%f ", i-1, i, matrix_ptr[(i-2)*3+1+2]);
+        //printf("%lu,%lu=%f ", i-1, i, matrix_ptr[(i-2)*3+1+2]);
         A.insert(i,i) = matrix_ptr[(i-1)*3+1+1];
-        printf("%lu,%lu=%f ", i, i, matrix_ptr[(i-1)*3+1+1]);
+        //printf("%lu,%lu=%f ", i, i, matrix_ptr[(i-1)*3+1+1]);
         A.insert(i+1,i) = matrix_ptr[i*3+1];
-        printf("%lu,%lu=%f\n", i+1, i, matrix_ptr[i*3+1]);
+        //printf("%lu,%lu=%f\n", i+1, i, matrix_ptr[i*3+1]);
         std::cout << std::flush;
     }
     A.insert(n-3,n-2) = matrix_ptr[m-5];
