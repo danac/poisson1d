@@ -28,7 +28,7 @@ if __name__ == "__main__":
     parameters = {
         'a'        : 0,
         'b'        : 1,
-        'n'        : 100,
+        'n'        : 100000,
         'fa'       : 1,
         'fb'       : 1,
         'rhs_func' : "-5*sin(_pi*x)", # Expression for the righ-hand side
@@ -51,8 +51,8 @@ if __name__ == "__main__":
     # sink-nosolve does not solve and returns an array filled with zeros instead
     executables = {
         'vent'    : "./ventilator",
-        'sink'    : "./sink",
-        #'sink'    : "./sink-nosolve",
+        #'sink'    : "./sink",
+        'sink'    : "./sink-nosolve",
         'workers' : "./worker"
     }
 
@@ -60,7 +60,8 @@ if __name__ == "__main__":
 
     driver.run()
 
-    print("[DRIVER] Assembly time: {} milliseconds".format(driver.assembly_time))
+    print("[DRIVER] Parallel assembly time: {} milliseconds".format(driver.parallel_assembly_times))
+    print("[DRIVER] Total assembly time: {} milliseconds".format(driver.total_assembly_time))
 
     driver.plot()
 

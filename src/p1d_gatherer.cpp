@@ -24,12 +24,15 @@
 #include "p1d_gatherer.hpp"
 #include "p1d_merger.hpp"
 #include "p1d_solver.hpp"
+#include "p1d_helper_functions.hpp"
 
 #include <iostream>
 #include <sstream>
 #include <sys/time.h>
 
 namespace poisson1d {
+
+using utils::get_time_difference;
 
 Gatherer::Gatherer(size_t input_port,
                    size_t control_port,
@@ -64,10 +67,12 @@ void Gatherer::gather()
     input_buffer = static_cast<size_t*>(start_msg2.data());
     size_t n = *input_buffer;
 
-    struct timeval tstart;
+    struct timeval tstart, tend;
     gettimeofday (&tstart, NULL);
 
     //std::cout << "Received problem info: " << num_jobs << " " << n << std::endl;
+    Real* parallel_assembly_times = new Real[num_jobs];
+    Real total_assembly_time(0);
 
     Merger* merger = new Merger(n, num_jobs);
     for(size_t i(0); i < num_jobs; ++i)
@@ -80,22 +85,9 @@ void Gatherer::gather()
         job_result.unpack(input_buffer);
 
         merger->merge_job_result(job_result);
-        //std::cout << "Received a job result: " << i << std::endl;
+        parallel_assembly_times[i] = job_result.get_assembly_time();
     }
 
-    struct timeval tend, tdiff;
-    gettimeofday (&tend, NULL);
-
-    if (tend.tv_usec < tstart.tv_usec) {
-        tdiff.tv_sec = tend.tv_sec - tstart.tv_sec - 1;
-        tdiff.tv_usec = 1000000 + tend.tv_usec - tstart.tv_usec;
-    }
-    else {
-        tdiff.tv_sec = tend.tv_sec - tstart.tv_sec;
-        tdiff.tv_usec = tend.tv_usec - tstart.tv_usec;
-    }
-
-    Real assembly_time = tdiff.tv_sec * 1000 + tdiff.tv_usec / 1000;
     zmq::message_t kill_msg(5);
     memcpy(kill_msg.data(), "KILL", 5);
     control_socket.send(kill_msg);
@@ -103,6 +95,10 @@ void Gatherer::gather()
 
     const Real* matrix_ptr = merger->get_matrix_ptr();
     const Real* rhs_ptr = merger->get_rhs_ptr();
+
+    gettimeofday (&tend, NULL);
+
+    total_assembly_time = get_time_difference(tstart, tend);
 
     const Real* x_ptr(NULL);
     Solution* solution(NULL);
@@ -126,13 +122,21 @@ void Gatherer::gather()
         x_ptr = solution;
     }
 
-    size_t assembly_time_size = sizeof(assembly_time);
+    size_t total_assembly_time_size = sizeof(total_assembly_time);
+    size_t parallel_assembly_time_size = total_assembly_time_size*num_jobs;
     size_t solution_size = n*sizeof(Real);
+
+    zmq::message_t parallel_assembly_time_msg(parallel_assembly_time_size);
+    zmq::message_t total_assembly_time_msg(total_assembly_time_size);
     zmq::message_t solution_msg(solution_size);
-    zmq::message_t assembly_time_msg(assembly_time_size);
-    memcpy(assembly_time_msg.data(), &assembly_time, assembly_time_size);
+
+    memcpy(parallel_assembly_time_msg.data(), parallel_assembly_times, parallel_assembly_time_size);
+    memcpy(total_assembly_time_msg.data(), &total_assembly_time, total_assembly_time_size);
     memcpy(solution_msg.data(), x_ptr, solution_size);
-    control_socket.send(assembly_time_msg, ZMQ_SNDMORE);
+    delete[] parallel_assembly_times;
+
+    control_socket.send(parallel_assembly_time_msg, ZMQ_SNDMORE);
+    control_socket.send(total_assembly_time_msg, ZMQ_SNDMORE);
     control_socket.send(solution_msg);
     //std::cout << "Published solution!" << std::endl;
 

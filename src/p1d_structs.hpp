@@ -98,7 +98,8 @@ class JobResult : Packable {
         size_t get_rank() const;
         size_t get_n() const;
         size_t get_nnz() const;
-
+        Real get_assembly_time() const;
+        void set_assembly_time(Real time);
 
     private:
         Real* rhs_ptr;
@@ -107,6 +108,7 @@ class JobResult : Packable {
         size_t n;
         size_t rank;
         bool data_ownership;
+        Real assembly_time;
 };
 
 class Solution : public Packable {

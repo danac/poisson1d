@@ -59,14 +59,16 @@ class P1D_Driver:
         self.solution_buffer = None
 
         # Total time spent by the C++ processes assembling the finite-elements matrix
-        self.assembly_time = 0
+        self.total_assembly_time = 0
+        self.parallel_assembly_times = None
 
         self.solving = True
+
+        """ Initialization """
 
         if "nosolve" in self.executables['sink']:
             self.solving = False
 
-        """ Initialization """
         # Convert the port numbers to strings for convenience
         self.ports = {key:str(val) for key,val in self.ports.items()}
 
@@ -79,7 +81,7 @@ class P1D_Driver:
 
         # Set-up another 0MQ socket to retrieve the solution form the "sink" (which also solves the problem)
         self.result_socket = context.socket(zmq.SUB)
-        self.result_socket.setsockopt_string(zmq.SUBSCRIBE, six.u("")) # Hack for Python2 caompatibility
+        self.result_socket.setsockopt_string(zmq.SUBSCRIBE, six.u("")) # Hack for Python2 compatibility
         self.result_socket.connect("tcp://localhost:" + self.ports['sink_pub'])
 
     # Function used to start the C++ programsa
@@ -155,13 +157,17 @@ class P1D_Driver:
                 # Ignore the kill signal meant to shutdown the workers
                 if message != b'KILL\x00':
                     # We actually receive a multipart message
-                    # The first part is the assembly time...
-                    self.assembly_time = struct.unpack('d', message)[0]
-                    # ...and the second part is the solution vector
+                    # The first part is the parallel assembly time array...
+                    format_pattern = 'd' * num_jobs
+                    self.parallel_assembly_times = struct.unpack(format_pattern, message)
+                    # ...the second part is the total assembly time
+                    message = self.result_socket.recv()
+                    self.total_assembly_time = struct.unpack('d', message)[0]
+                    # ...and the third part is the solution vector
                     self.solution_buffer = self.result_socket.recv()
                     break;
 
-            # In case of an interrupt, kill the C++ processes
+            # In case of interruption, kill the C++ processes
             except KeyboardInterrupt:
                 interrupt = True
                 self.kill_cpp_execs(pids)

@@ -25,8 +25,11 @@
 #include "p1d_helper_functions.hpp"
 #include "muParser.h"
 #include <cassert>
+#include <sys/time.h>
 
 namespace poisson1d {
+
+using utils::get_time_difference;
 
 DistributedAssembler::DistributedAssembler(const Job & job)
 : job_ptr(&job),
@@ -232,10 +235,19 @@ size_t DistributedAssembler::get_rhs_size() const
 
 JobResult* DistributedAssembler::get_job_result_alloc()
 {
+    struct timeval tstart, tend;
+    gettimeofday(&tstart, NULL);
+
     size_t rank = job_ptr->get_rank();
     Real* result_rhs_ptr = assemble_rhs_alloc();
     Real* result_matrix_ptr = assemble_matrix_alloc();
-    return new JobResult(result_matrix_ptr, result_rhs_ptr, rank, nnz, n, true);
+
+    gettimeofday(&tend, NULL);
+
+    JobResult* job_result = new JobResult(result_matrix_ptr, result_rhs_ptr, rank, nnz, n, true);
+    job_result->set_assembly_time(get_time_difference(tstart, tend));
+
+    return job_result;
 }
 
 } //namespace poisson1d

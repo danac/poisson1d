@@ -186,7 +186,13 @@ size_t Job::get_rank() const
  */
 
 JobResult::JobResult(Real* matrix_ptr_, Real* rhs_ptr_, size_t rank_, size_t nnz_, size_t n_, bool ownership)
-: rhs_ptr(rhs_ptr_), matrix_ptr(matrix_ptr_), nnz(nnz_), n(n_), rank(rank_), data_ownership(ownership)
+: rhs_ptr(rhs_ptr_),
+  matrix_ptr(matrix_ptr_),
+  nnz(nnz_),
+  n(n_),
+  rank(rank_),
+  data_ownership(ownership),
+  assembly_time(0)
 {}
 
 JobResult::JobResult()
@@ -208,6 +214,7 @@ size_t JobResult::get_packed_size() const
     size += sizeof(nnz);
     size += sizeof(n);
     size += sizeof(rank);
+    size += sizeof(assembly_time);
     size += n*sizeof(Real);
     size += nnz*sizeof(Real);
     return size;
@@ -220,6 +227,7 @@ Byte* JobResult::pack(Byte* const buffer) const
     cursor = write_to_buffer(nnz, cursor);
     cursor = write_to_buffer(n, cursor);
     cursor = write_to_buffer(rank, cursor);
+    cursor = write_to_buffer(assembly_time, cursor);
 
     size_t matrix_byte_size = nnz*sizeof(Real);
     memcpy(cursor, matrix_ptr, matrix_byte_size);
@@ -239,6 +247,7 @@ const Byte* JobResult::unpack(const Byte* buffer)
     cursor = read_from_buffer(nnz, cursor);
     cursor = read_from_buffer(n, cursor);
     cursor = read_from_buffer(rank, cursor);
+    cursor = read_from_buffer(assembly_time, cursor);
 
     size_t matrix_byte_size = nnz*sizeof(Real);
     matrix_ptr = new Real[nnz];
@@ -299,6 +308,16 @@ size_t JobResult::get_n() const
 size_t JobResult::get_nnz() const
 {
     return nnz;
+}
+
+Real JobResult::get_assembly_time() const
+{
+    return assembly_time;
+}
+
+void JobResult::set_assembly_time(Real time)
+{
+    assembly_time = time;
 }
 
 

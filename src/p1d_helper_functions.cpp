@@ -23,6 +23,7 @@
 
 #include "p1d_helper_functions.hpp"
 #include <iostream>
+#include <time.h>
 
 namespace poisson1d {
 namespace utils {
@@ -92,6 +93,21 @@ size_t get_matrix_nnz(size_t n, MeshGlobalPosition position)
 void dealloc_hook (void* data, void* hint)
 {
     delete[] static_cast<Real*>(data);
+}
+
+Real get_time_difference(struct timeval tstart, struct timeval tend) {
+    struct timeval tdiff;
+
+    if (tend.tv_usec < tstart.tv_usec) {
+        tdiff.tv_sec = tend.tv_sec - tstart.tv_sec - 1;
+        tdiff.tv_usec = 1000000 + tend.tv_usec - tstart.tv_usec;
+    }
+    else {
+        tdiff.tv_sec = tend.tv_sec - tstart.tv_sec;
+        tdiff.tv_usec = tend.tv_usec - tstart.tv_usec;
+    }
+
+    return tdiff.tv_sec * 1000 + tdiff.tv_usec / 1000;
 }
 
 } //namespace utils
