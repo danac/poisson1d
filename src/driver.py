@@ -20,7 +20,7 @@
 #  MA 02110-1301, USA.
 #
 
-from p1d_driver import  *
+from p1d_driver import P1D_Driver
 
 if __name__ == "__main__":
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         'n'        : 100,
         'fa'       : 1,
         'fb'       : 1,
-        'rhs_func' : "x*x", # Expression for the righ-hand side
+        'rhs_func' : "-5*sin(_pi*x)", # Expression for the righ-hand side
         'num_jobs' : 2
     }
 

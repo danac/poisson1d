@@ -33,6 +33,10 @@ import numpy as np
 import subprocess as subp
 import py_poisson1d as p1d
 
+# Import math functions supported by muParser
+from numpy import sin,cos,tan,sinh,cosh,tanh,log2,log10,log,exp,sqrt,sign,rint,abs,min,max,sum,pi
+from math import asin,acos,atan,asinh,acosh,atanh
+
 class P1D_Driver:
 
     def __init__(self, parameters, executables, ports):
@@ -173,16 +177,11 @@ class P1D_Driver:
             # Trick to get the size of a double on the machine
             dtype = eval("np.float"+str(struct.calcsize('d')*8))
             solution = np.frombuffer(self.solution_buffer, dtype=dtype)
-            # Create a function handle based on the expression for the right-hand side
-            rhs_lambda = lambda x: eval(rhs_func)
-
-            # Turn it into an optimized Numpy function handle
-            rhs_f = np.vectorize(rhs_lambda)
 
             # Allocate arrays for the x variable and for the right-hand side function
             x = np.linspace(a, b, n)
-            rhs = x
-            rhs = rhs_f(rhs)
+            rhs = self.get_rhs(x)
+
             # Plot the final results
             self.draw(x, rhs, solution)
         else:
@@ -221,3 +220,20 @@ class P1D_Driver:
 
         plt.grid(True)
         plt.show()
+
+    def get_rhs(self, x):
+
+        # Fix the logarithm function names
+        rhs_func_parsed = ( self.parameters['rhs_func']
+            .replace('log', 'log10')
+            .replace('ln', 'log')
+            .replace('_pi', 'pi') )
+
+        # Create a function handle based on the expression
+        rhs_lambda = lambda x: eval(rhs_func_parsed)
+
+        # Turn it into an optimized Numpy function handle
+        rhs_f = np.vectorize(rhs_lambda)
+        rhs = rhs_f(x)
+
+        return rhs
