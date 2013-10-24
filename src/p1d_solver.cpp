@@ -25,7 +25,7 @@
 #include <cassert>
 #include <Eigen/SparseLU>
 #include <iostream>
-
+#include <cstdio>
 namespace poisson1d {
 
 Solver::Solver(const Real* matrix_ptr, const Real* rhs_ptr, size_t n_)
@@ -40,19 +40,27 @@ Solver::~Solver()
 
 void Solver::load_matrix_array(const Real* matrix_ptr)
 {
+    std::cout << "Converting the matrix" << std::endl;
     size_t m = 3*(n-2)+2;
     A.reserve(Eigen::VectorXi::Constant(n,3));
     A.insert(0,0) = matrix_ptr[0];
+    A.insert(1,0) = matrix_ptr[1];
+    A.insert(1,1) = matrix_ptr[2];
+    A.insert(2,1) = matrix_ptr[4];
     //printf("%d,%d=%f\n", 0, 0, matrix_ptr[0]);
-    for(std::size_t i(1); i < n-1; ++i)
+    for(std::size_t i(2); i < n-2; ++i)
     {
-        A.insert(i,i-1) = matrix_ptr[(i-1)*3+1];
-        //printf("%lu,%lu=%f ", i, i-1, matrix_ptr[(i-1)*3+1]);
-        A.insert(i,i) = matrix_ptr[(i-1)*3+2];
-        //printf("%lu,%lu=%f ", i, i, matrix_ptr[(i-1)*3+2]);
-        A.insert(i,i+1) = matrix_ptr[(i-1)*3+3];
-        //printf("%lu,%lu=%f\n", i, i+1, matrix_ptr[(i-1)*3+3]);
+        A.insert(i-1,i) = matrix_ptr[(i-2)*3+1+2];
+        printf("%lu,%lu=%f ", i-1, i, matrix_ptr[(i-2)*3+1+2]);
+        A.insert(i,i) = matrix_ptr[(i-1)*3+1+1];
+        printf("%lu,%lu=%f ", i, i, matrix_ptr[(i-1)*3+1+1]);
+        A.insert(i+1,i) = matrix_ptr[i*3+1];
+        printf("%lu,%lu=%f\n", i+1, i, matrix_ptr[i*3+1]);
+        std::cout << std::flush;
     }
+    A.insert(n-3,n-2) = matrix_ptr[m-5];
+    A.insert(n-2,n-2) = matrix_ptr[m-3];
+    A.insert(n-2,n-1) = matrix_ptr[m-2];
     A.insert(n-1,n-1) = matrix_ptr[m-1];
     //printf("%lu,%lu=%f\n", n-1, n-1, matrix_ptr[m-1]);
     A.makeCompressed();

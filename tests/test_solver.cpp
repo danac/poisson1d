@@ -63,10 +63,10 @@ void dump_vector_ptr(const Real* vector_ptr, size_t n)
 int main(int argc, char* argv[])
 {
 
-    size_t n(3);
+    size_t n(5);
     Real a(0), b(1);
     Real fa(10), fb(2);
-    Real ref_value[3] = {10., 49./8, 2.};
+    Real ref_value[5] = {10., 259./32., 49./8., 131./32., 2.};
     Real epsilon = std::numeric_limits<Real>::epsilon();
     std::string rhs_func("1");
     size_t num_jobs(1);

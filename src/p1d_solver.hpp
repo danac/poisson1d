@@ -39,7 +39,7 @@ class Solver
         Solution* get_solution_alloc();
 
     private:
-        typedef Eigen::SparseMatrix<Real, Eigen::ColMajor> SparseMat;
+        typedef Eigen::SparseMatrix<Real> SparseMat;
         typedef Eigen::Matrix<Real, Eigen::Dynamic, 1> Vec;
 
         void load_matrix_array(const Real* matrix_ptr);
